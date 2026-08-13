@@ -10,5 +10,5 @@ if(ANDROID)
 endif()
 
 add_subdirectory(memoryeditor)
-add_subdirectory(inbuiltmods)
+### add_subdirectory(inbuiltmods)
 add_subdirectory(libHttpClient/Build/libHttpClient.Android)
