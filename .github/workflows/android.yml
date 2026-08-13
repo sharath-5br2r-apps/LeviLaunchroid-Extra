@@ -33,33 +33,17 @@ jobs:
             git ls-remote --tags https://github.com/LiteLDev/LeviLaunchroid.git \
               | awk '{print $2}' \
               | sed 's#refs/tags/##; s/\^{}$//' \
-              | sort -u \
-              | python3 -c '
-          import sys
-          import re
-
-          versions = []
-
-          for line in sys.stdin:
-              tag = line.strip()
-
-              if re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", tag):
-                  version = tuple(map(int, tag.split(".")))
-                  versions.append((version, tag))
-
-          versions.sort(key=lambda x: x[0])
-
-          print(versions[-1][1] if versions else "")
-          '
+              | sort -V \
+              | tail -n 1
           )
 
           if [ -z "$LATEST_TAG" ]; then
-            echo "No valid upstream release tag found."
+            echo "No upstream release tag found."
             exit 1
           fi
 
           echo "tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-          echo "Latest upstream release: $LATEST_TAG"
+          echo "Latest upstream release tag: $LATEST_TAG"
 
       - name: Determine whether to build
         id: check
@@ -87,7 +71,7 @@ jobs:
               SHOULD_RUN=false
 
             else
-              echo "New upstream version detected: $UPSTREAM_TAG"
+              echo "New upstream tag detected: $UPSTREAM_TAG"
               echo "Scheduled build will run."
 
               SHOULD_RUN=true
@@ -100,58 +84,55 @@ jobs:
             exit 0
           fi
 
+          VERSION_BASE="${UPSTREAM_TAG#v}"
+
           EXISTING=$(
             gh api \
               "repos/${{ github.repository }}/releases" \
               --paginate \
               --jq '.[].tag_name' \
-              | grep -E "^levilauncher-$UPSTREAM_TAG(-r[0-9]+)?$" \
+              | grep -E "^levilaunchroid-${UPSTREAM_TAG}(-r[0-9]+)?$" \
               || true
           )
 
           if [ -z "$EXISTING" ]; then
-
             REVISION=1
 
-            RELEASE_TAG="levilauncher-$UPSTREAM_TAG"
-            RELEASE_NAME="LeviLauncher $UPSTREAM_TAG"
+            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}"
+            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG}"
 
           else
-
             MAX_REV=$(
               echo "$EXISTING" \
                 | sed -E \
-                    "s/^levilauncher-$UPSTREAM_TAG-r([0-9]+)$/\1/; \
-                     s/^levilauncher-$UPSTREAM_TAG$/1/" \
+                    "s/^levilaunchroid-${UPSTREAM_TAG}-r([0-9]+)$/\1/; \
+                     s/^levilaunchroid-${UPSTREAM_TAG}$/1/" \
                 | sort -n \
                 | tail -1
             )
 
             REVISION=$((MAX_REV + 1))
 
-            RELEASE_TAG="levilauncher-$UPSTREAM_TAG-r$REVISION"
-            RELEASE_NAME="LeviLauncher $UPSTREAM_TAG (Update $REVISION)"
-
+            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-r${REVISION}"
+            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (Update ${REVISION})"
           fi
 
-          VERSION_NAME="${UPSTREAM_TAG}-${REVISION}"
+          VERSION_NAME="${VERSION_BASE}-${REVISION}"
 
           echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           echo "release_name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
 
-          echo
-          echo "Upstream version : $UPSTREAM_TAG"
-          echo "Revision         : $REVISION"
-          echo "versionName      : $VERSION_NAME"
-          echo "Release tag      : $RELEASE_TAG"
-          echo "Release name     : $RELEASE_NAME"
+          echo "Upstream tag : $UPSTREAM_TAG"
+          echo "Version base : $VERSION_BASE"
+          echo "Revision     : $REVISION"
+          echo "versionName  : $VERSION_NAME"
+          echo "Release tag  : $RELEASE_TAG"
+          echo "Release name : $RELEASE_NAME"
 
   build:
     needs: check
-
     if: needs.check.outputs.should_run == 'true'
-
     runs-on: ubuntu-latest
 
     steps:
@@ -350,19 +331,19 @@ jobs:
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-debug-apk
+          name: LeviLaunchroid-debug-apk
           path: app/build/outputs/apk/debug/*.apk
 
       - name: Upload Unsigned Release APK
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-release-unsigned-apk
+          name: LeviLaunchroid-release-unsigned-apk
           path: app/build/outputs/apk/release/*-unsigned.apk
 
       - name: Upload Beta APK
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-beta-apk
+          name: LeviLaunchroid-beta-apk
           path: app/build/outputs/apk/beta/*.apk
 
       - name: Sign Release APK
@@ -390,7 +371,7 @@ jobs:
             exit 1
           fi
 
-          APK_NAME="levilauncher-extra-v${VERSION}-all.apk"
+          APK_NAME="levilaunchroid-extra-v${VERSION}-all.apk"
 
           cp "$SIGNED_APK" "$APK_NAME"
 
@@ -399,8 +380,8 @@ jobs:
       - name: Upload Signed APK Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: levilauncher-extra-v${{ needs.check.outputs.version_name }}-all
-          path: levilauncher-extra-v${{ needs.check.outputs.version_name }}-all.apk
+          name: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all
+          path: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -411,7 +392,7 @@ jobs:
           prerelease: false
           make_latest: true
           generate_release_notes: true
-          files: levilauncher-extra-v${{ needs.check.outputs.version_name }}-all.apk
+          files: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
           body: |
             Built against upstream release `${{ needs.check.outputs.upstream_tag }}`.
 
