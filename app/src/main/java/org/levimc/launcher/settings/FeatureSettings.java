@@ -10,6 +10,7 @@ public class FeatureSettings {
     private boolean logcatOverlayEnabled = false;
     private boolean memoryEditorEnabled = false;
     private Boolean crashUploadEnabled = true;
+    private int resourcePackCacheLimitMB = 0;
 
     public enum StorageType {
         INTERNAL,
