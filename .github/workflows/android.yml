@@ -146,7 +146,7 @@ jobs:
 
       - name: Inject API Keys
         env:
-          CF_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          CF_API_KEY: $2a$10$bL4bIL5pUWqfcO7KQtnMReakwtfHbNKh6v1uTpKlzhwoueEJQnPnm #curseforge launcher key
         run: echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
 
       - name: Build APKs
@@ -183,10 +183,10 @@ jobs:
         id: sign_app
         with:
           releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE }}
-          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signingKeyBase64: ${{ secrets.KEYSTORE_P12_BASE64 }}
+          alias: ${{ secrets.KEYSTORE_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           zipAlign: true
         env:
           BUILD_TOOLS_VERSION: "35.0.0"
@@ -203,57 +203,23 @@ jobs:
         run: |
           SIGNED_APK="${{ steps.sign_app.outputs.signedReleaseFile }}"
           if [ -n "$SIGNED_APK" ] && [ -f "$SIGNED_APK" ]; then
-            APK_NAME="LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk"
+            APK_NAME="levilaunchroid-extra-v${{ steps.version.outputs.version }}-all.apk"
             cp "$SIGNED_APK" "$APK_NAME"
             echo "Signed APK renamed to $APK_NAME"
           fi
 
       - name: Upload Signed APK Artifact
-        if: github.ref_name != 'test' && hashFiles('LeviLaunchroid_AG-v*-release.apk') != ''
+        if: github.ref_name != 'test' && hashFiles('levilaunchroid-extra-v*-all.apk') != ''
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release
-          path: LeviLaunchroid_AG-v*-release.apk
+          name: levilaunchroid-extra-v${{ steps.version.outputs.version }}-all
+          path: levilaunchroid-extra-v*-all.apk
 
       - name: Release APK to GitHub Releases
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk
+          files:levilaunchroid-extra-v${{ steps.version.outputs.version }}-all.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Notify Discord
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          APK_URL: "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk"
-          TAG_NAME: ${{ github.ref_name }}
-        run: |
-          EMBED_TITLE="🚀 LeviLauncher Update!"
-          EMBED_DESC="A new version of **LeviLaunchroid** is ready."
-          EMBED_COLOR=5814783
-          THUMB_URL='https://avatars.githubusercontent.com/u/78095377?s=200&v=4'
-
-          curl -H "Content-Type: application/json" \
-          -d "{
-            \"embeds\": [{
-              \"title\": \"$EMBED_TITLE\",
-              \"description\": \"$EMBED_DESC\",
-              \"color\": $EMBED_COLOR,
-              \"thumbnail\": { \"url\": \"$THUMB_URL\" },
-              \"fields\": [
-                {
-                  \"name\": \"📦 Version\",
-                  \"value\": \"\`$TAG_NAME\`\",
-                  \"inline\": true
-                },
-                {
-                  \"name\": \"🔗 Download\",
-                  \"value\": \"[**Click here to download APK**]($APK_URL)\",
-                  \"inline\": true
-                }
-              ]
-            }]
-          }" \
-          "$DISCORD_WEBHOOK"
+    
