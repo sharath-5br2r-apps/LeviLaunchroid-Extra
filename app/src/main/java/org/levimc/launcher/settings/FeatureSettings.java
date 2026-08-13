@@ -8,6 +8,7 @@ public class FeatureSettings {
     private boolean versionIsolationEnabled = false;
     private boolean launcherManagedMcLoginEnabled = false;
     private boolean logcatOverlayEnabled = false;
+    private boolean memoryEditorEnabled = false;
     private Boolean crashUploadEnabled = true;
 
     public enum StorageType {
@@ -48,7 +49,11 @@ public class FeatureSettings {
     public boolean isCrashUploadEnabled() { return crashUploadEnabled == null || crashUploadEnabled; }
     public void setCrashUploadEnabled(boolean enabled) { this.crashUploadEnabled = enabled; autoSave(); }
 
+    public boolean isMemoryEditorEnabled() { return memoryEditorEnabled; }
+    public void setMemoryEditorEnabled(boolean enabled) { this.memoryEditorEnabled = enabled; autoSave(); }
 
+    public int getResourcePackCacheLimitMB() { return resourcePackCacheLimitMB; }
+    public void setResourcePackCacheLimitMB(int limit) { this.resourcePackCacheLimitMB = limit; autoSave(); }
     private void autoSave() {
         if (appContext != null) {
             SettingsStorage.save(appContext, this);

@@ -1,5 +1,8 @@
 name: Android CI
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -98,6 +101,24 @@ jobs:
           java-version: "21"
           distribution: temurin
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/android-sdk
+            ${{ runner }}/Android/Sdk
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('.github/workflows/android.yml') }}
+          restore-keys: android-sdk-${{ runner.os }}-
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -106,9 +127,6 @@ jobs:
 
       - name: Install Build Tools 35.0.0
         run: sdkmanager "build-tools;35.0.0"
-
-      - name: Verify installed SDK Packages
-        run: sdkmanager --list
 
       - name: Setup Xmake
         uses: xmake-io/github-action-setup-xmake@v1
@@ -131,37 +149,36 @@ jobs:
           CF_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
         run: echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
 
-      - name: Build Debug, Beta and Unsigned Release APKs
-        if: env.HAS_GOOGLE_SERVICES == 'true'
-        run: ./gradlew assembleDebug assembleBeta assembleRelease
-
-      - name: Compile Debug Without Firebase Secrets
-        if: env.HAS_GOOGLE_SERVICES == 'false'
-        run: ./gradlew :app:compileDebugKotlin :app:compileDebugJavaWithJavac
+      - name: Build APKs
+        run: |
+          if [ "${{ github.ref_name }}" = "test" ]; then
+            ./gradlew assembleDebug --stacktrace
+          else
+            ./gradlew assembleDebug assembleBeta assembleRelease --stacktrace
+          fi
 
       - name: Upload Debug APK
-        if: env.HAS_GOOGLE_SERVICES == 'true'
         uses: actions/upload-artifact@v4.6.2
         with:
           name: LeviLauncher-debug-apk
           path: app/build/outputs/apk/debug/*.apk
 
       - name: Upload Unsigned Release APK
-        if: env.HAS_GOOGLE_SERVICES == 'true'
+        if: github.ref_name != 'test'
         uses: actions/upload-artifact@v4.6.2
         with:
           name: LeviLauncher-release-unsigned-apk
           path: app/build/outputs/apk/release/*-unsigned.apk
 
       - name: Upload Beta APK
-        if: env.HAS_GOOGLE_SERVICES == 'true'
+        if: github.ref_name != 'test'
         uses: actions/upload-artifact@v4.6.2
         with:
           name: LeviLauncher-beta-apk
           path: app/build/outputs/apk/beta/*.apk
 
       - name: Sign Release APK
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+        if: github.ref_name != 'test'
         uses: kevin-david/zipalign-sign-android-release@v2
         id: sign_app
         with:
@@ -174,35 +191,43 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "35.0.0"
 
-      - name: Rename APK with tag
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+      - name: Get version name
+        if: github.ref_name != 'test'
+        id: version
         run: |
-          TAG=${GITHUB_REF_NAME}
+          VERSION=$(grep 'versionName' app/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Rename Signed APK
+        if: github.ref_name != 'test'
+        run: |
           SIGNED_APK="${{ steps.sign_app.outputs.signedReleaseFile }}"
-          APK_DST="LeviLauncher-${TAG}-release.apk"
-          cp "$SIGNED_APK" "$APK_DST"
-          echo "Signed APK renamed to $APK_DST"
+          if [ -n "$SIGNED_APK" ] && [ -f "$SIGNED_APK" ]; then
+            APK_NAME="LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk"
+            cp "$SIGNED_APK" "$APK_NAME"
+            echo "Signed APK renamed to $APK_NAME"
+          fi
 
       - name: Upload Signed APK Artifact
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+        if: github.ref_name != 'test' && hashFiles('LeviLaunchroid_AG-v*-release.apk') != ''
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-${{ github.ref_name }}-release.apk
-          path: LeviLauncher-${{ github.ref_name }}-release.apk
+          name: LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release
+          path: LeviLaunchroid_AG-v*-release.apk
 
       - name: Release APK to GitHub Releases
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: LeviLauncher-${{ github.ref_name }}-release.apk
+          files: LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify Discord
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          APK_URL: "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/LeviLauncher-${{ github.ref_name }}-release.apk"
+          APK_URL: "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk"
           TAG_NAME: ${{ github.ref_name }}
         run: |
           EMBED_TITLE="🚀 LeviLauncher Update!"

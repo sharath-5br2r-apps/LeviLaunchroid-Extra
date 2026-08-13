@@ -814,4 +814,33 @@
 
     <string name="unsupported_version_title">不支持的版本</string>
     <string name="unsupported_version_msg">此启动器不支持早于 1.21.80 的 Minecraft 版本。</string>
+    <!-- Memory Overlay -->
+    <string name="memory_overlay_config_title">配置悬浮按钮</string>
+    <string name="memory_overlay_name">按钮名称</string>
+    <string name="memory_overlay_name_hint">例如：生命值、速度</string>
+    <string name="memory_overlay_original_value">原始值</string>
+    <string name="memory_overlay_new_value">新值</string>
+    <string name="memory_overlay_new_value_hint">输入要应用的值</string>
+    <string name="memory_overlay_toggleable">可切换</string>
+    <!-- Memory Editor -->
+    <string name="memory_editor_enable">内存编辑器</string>
+    <string name="memory_editor_title">内存编辑器</string>
+    <string name="memory_editor_minimize">最小化</string>
+    <string name="memory_editor_close">关闭</string>
+    <string name="memory_editor_value_hint">数值</string>
+    <string name="memory_editor_search">搜索</string>
+    <string name="memory_editor_filter">筛选</string>
+    <string name="memory_editor_reset">重置</string>
+    <string name="memory_editor_address">地址</string>
+    <string name="memory_editor_value">数值</string>
+    <string name="memory_editor_action">操作</string>
+    <string name="memory_editor_tab_search">搜索</string>
+    <string name="memory_editor_tab_saved">已保存</string>
+    <string name="memory_editor_save">保存</string>
+    <string name="memory_editor_freeze">锁定</string>
+    <string name="memory_editor_delete">删除</string>
+    <string name="memory_editor_overlay">悬浮按钮</string>
+    <string name="memory_editor_base_address">MC基址: %1$s</string>
+    <string name="memory_editor_base_loading">正在加载基址…</string>
 </resources>
+

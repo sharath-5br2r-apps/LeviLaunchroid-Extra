@@ -34,6 +34,7 @@ import org.levimc.launcher.R;
 import org.levimc.launcher.core.crash.CrashReporter;
 import org.levimc.launcher.preloader.PreloaderSignatureRulesManager;
 import org.levimc.launcher.settings.FeatureSettings;
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.LogcatOverlayManager;
 import org.levimc.launcher.util.GithubReleaseUpdater;
@@ -294,9 +295,32 @@ public class SettingsActivity extends BaseActivity {
             CrashReporter.refreshCrashlyticsCollection(this);
         });
 
+        SwitchMaterial switchMemoryEditor = findViewById(R.id.switch_memory_editor);
+        switchMemoryEditor.setChecked(fs.isMemoryEditorEnabled());
+        switchMemoryEditor.setOnCheckedChangeListener((btn, checked) -> {
+            if (checked && !fs.isMemoryEditorEnabled()) {
+                switchMemoryEditor.setChecked(false);
+                showMemoryEditorWarningDialog(switchMemoryEditor, fs);
+            } else if (!checked) {
+                fs.setMemoryEditorEnabled(false);
+            }
+        });
+
         SwitchMaterial switchManagedLogin = findViewById(R.id.switch_managed_login);
         switchManagedLogin.setChecked(fs.isLauncherManagedMcLoginEnabled());
         switchManagedLogin.setOnCheckedChangeListener((btn, checked) -> fs.setLauncherManagedMcLoginEnabled(checked));
+    }
+
+    private void showMemoryEditorWarningDialog(SwitchMaterial sw, FeatureSettings fs) {
+        CustomAlertDialog dialog = new CustomAlertDialog(this);
+        dialog.setTitleText(getString(R.string.memory_editor_warning_title))
+              .setMessage(getString(R.string.memory_editor_warning_message))
+              .setPositiveButton(getString(R.string.confirm), v -> {
+                  fs.setMemoryEditorEnabled(true);
+                  sw.setChecked(true);
+              })
+              .setNegativeButton(getString(R.string.cancel), null)
+              .show();
     }
 
     private void setupPersonalizeSection() {
@@ -834,7 +858,7 @@ public class SettingsActivity extends BaseActivity {
 
     private void setupAboutSection() {
         findViewById(R.id.settings_btn_github).setOnClickListener(v ->
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/LiteLDev/LeviLaunchroid"))));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/AGAGAG666/LeviLaunchroid"))));
 
         findViewById(R.id.settings_btn_discord).setOnClickListener(v ->
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/jsnzw4ueAt"))));
@@ -854,7 +878,7 @@ public class SettingsActivity extends BaseActivity {
             updateButtonTapCount = 0;
             triggerEasterEgg();
         } else {
-            new GithubReleaseUpdater(this, "LiteLDev", "LeviLaunchroid", permissionResultLauncher).checkUpdate();
+            new GithubReleaseUpdater(this, "AGAGAG666", "LeviLaunchroid", permissionResultLauncher).checkUpdate();
         }
     }
 

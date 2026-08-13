@@ -484,13 +484,34 @@ public class VersionManager {
         String displayBaseName = safeValue(metadata.displayName, directoryName);
         String displayName = displayBaseName + " (" + versionCode + ")";
 
+        String detectedPackageName = null;
+        File packageTxt = new File(context.getDataDir(), "minecraft/" + dir.getName() + "/package.txt");
+        if (packageTxt.exists()) {
+            String txt = readFileToString(packageTxt);
+            if (!txt.isEmpty()) {
+                detectedPackageName = txt;
+            }
+        }
+        if (detectedPackageName == null) {
+            File apkFile = new File(dir, "base.apk.levi");
+            if (apkFile.exists()) {
+                try {
+                    PackageInfo pi = context.getPackageManager().getPackageArchiveInfo(apkFile.getAbsolutePath(), 0);
+                    if (pi != null && pi.packageName != null) {
+                        detectedPackageName = pi.packageName;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
         GameVersion gv = new GameVersion(
                 directoryName,
                 displayName,
                 versionCode,
                 dir,
                 false,
-                null,
+                detectedPackageName,
                 "unknown"
         );
 
@@ -879,5 +900,20 @@ public class VersionManager {
 
     private File getRuntimeLibDir(String dirName) {
         return MinecraftLauncher.getRuntimeLibDir(context, dirName);
+    }
+
+    private static String readFileToString(File file) {
+        try {
+            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(file));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            reader.close();
+            return sb.toString().trim();
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
