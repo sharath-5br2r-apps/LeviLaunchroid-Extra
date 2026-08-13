@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
 
           LATEST_TAG=$(
-            git ls-remote --tags https://github.com/Le2di/LeviLauncher.git \
+            git ls-remote --tags https://github.com/LiteLDev/LeviLauncher.git \
               | awk '{print $2}' \
               | sed 's#refs/tags/##; s/\^{}$//' \
               | sort -u \
