@@ -1,28 +1,129 @@
 name: Android CI
 
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+  workflow_dispatch:
+
 permissions:
   contents: write
 
-on:
-  push:
-    branches:
-      - "**"
-    tags:
-      - v*
-  pull_request:
-    branches:
-      - "**"
-  workflow_dispatch:
+concurrency:
+  group: android-upstream-build
+  cancel-in-progress: false
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
+
+    outputs:
+      upstream_tag: ${{ steps.latest.outputs.tag }}
+      should_run: ${{ steps.check.outputs.should_run }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+      release_name: ${{ steps.check.outputs.release_name }}
+      version_name: ${{ steps.check.outputs.version_name }}
+
+    steps:
+      - name: Determine latest upstream release tag
+        id: latest
+        run: |
+          set -euo pipefail
+
+          LATEST_TAG=$(
+            git ls-remote --tags https://github.com/Le2di/LeviLauncher.git \
+              | awk '{print $2}' \
+              | sed 's#refs/tags/##; s/\^{}$//' \
+              | sort -u \
+              | python3 -c '
+          import sys
+          import re
+
+          versions = []
+
+          for line in sys.stdin:
+              tag = line.strip()
+
+              if re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", tag):
+                  version = tuple(map(int, tag.split(".")))
+                  versions.append((version, tag))
+
+          versions.sort(key=lambda x: x[0])
+
+          print(versions[-1][1] if versions else "")
+          '
+          )
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No valid upstream release tag found."
+            exit 1
+          fi
+
+          echo "tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+
+          echo "Latest upstream release: $LATEST_TAG"
+
+      - name: Check whether upstream changed
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          UPSTREAM_TAG="${{ steps.latest.outputs.tag }}"
+
+          echo "Current upstream version: $UPSTREAM_TAG"
+
+          if git ls-remote --exit-code --tags \
+              "https://github.com/${{ github.repository }}.git" \
+              "refs/tags/sync/$UPSTREAM_TAG" >/dev/null 2>&1; then
+
+            echo "Upstream version $UPSTREAM_TAG has already been built."
+            echo "No changes detected."
+
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+
+            exit 0
+          fi
+
+          echo "New upstream version detected: $UPSTREAM_TAG"
+          echo "A build is required."
+
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+
+          #
+          # Every upstream version gets revision -1.
+          #
+          # Example:
+          #   1.5.15 -> 1.5.15-1
+          #   1.5.16 -> 1.5.16-1
+          #
+          VERSION_NAME="${UPSTREAM_TAG}-1"
+
+          RELEASE_TAG="levilauncher-${UPSTREAM_TAG}"
+          RELEASE_NAME="LeviLauncher ${UPSTREAM_TAG}"
+
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "release_name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
+
+          echo "Version name: $VERSION_NAME"
+          echo "Release tag:  $RELEASE_TAG"
+          echo "Release name: $RELEASE_NAME"
+
+  build:
+    needs: check
+
+    if: needs.check.outputs.should_run == 'true'
+
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: "recursive"
+          submodules: recursive
 
       - name: Prepare google-services.json
         env:
@@ -32,8 +133,11 @@ jobs:
 
           if [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
             echo "HAS_GOOGLE_SERVICES=false" >> "$GITHUB_ENV"
-            echo "GOOGLE_SERVICES_JSON_BASE64 is not configured; using a CI-only Firebase placeholder for compile checks."
+
+            echo "GOOGLE_SERVICES_JSON_BASE64 is not configured; using CI-only Firebase placeholder."
+
             mkdir -p app
+
             cat > app/google-services.json <<'JSON'
           {
             "project_info": {
@@ -65,17 +169,24 @@ jobs:
             "configuration_version": "1"
           }
           JSON
+
             exit 0
           fi
 
           mkdir -p app
-          printf '%s' "${GOOGLE_SERVICES_JSON_BASE64}" | base64 --decode > app/google-services.json
+
+          printf '%s' "${GOOGLE_SERVICES_JSON_BASE64}" \
+            | base64 --decode \
+            > app/google-services.json
+
           python3 -m json.tool app/google-services.json > /dev/null
+
           python3 - <<'PY'
           import json
           import sys
 
           expected = "org.levimc.launcher"
+
           with open("app/google-services.json", encoding="utf-8") as fp:
               data = json.load(fp)
 
@@ -85,14 +196,21 @@ jobs:
               .get("package_name")
               for client in data.get("client", [])
           }
+
           if expected not in package_names:
-              actual = ", ".join(sorted(name for name in package_names if name)) or "<none>"
+              actual = ", ".join(
+                  sorted(name for name in package_names if name)
+              ) or "<none>"
+
               print(
-                  f"google-services.json package_name mismatch: expected {expected}, got {actual}",
-                  file=sys.stderr,
+                  f"google-services.json package_name mismatch: "
+                  f"expected {expected}, got {actual}",
+                  file=sys.stderr
               )
+
               sys.exit(1)
           PY
+
           echo "HAS_GOOGLE_SERVICES=true" >> "$GITHUB_ENV"
 
       - name: Setup Java JDK
@@ -108,16 +226,18 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Cache Android SDK
         uses: actions/cache@v4
         with:
           path: |
             ~/android-sdk
-            ${{ runner }}/Android/Sdk
+            ~/Android/Sdk
           key: android-sdk-${{ runner.os }}-${{ hashFiles('.github/workflows/android.yml') }}
-          restore-keys: android-sdk-${{ runner.os }}-
+          restore-keys: |
+            android-sdk-${{ runner.os }}-
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -146,16 +266,50 @@ jobs:
 
       - name: Inject API Keys
         env:
-          CF_API_KEY: $2a$10$bL4bIL5pUWqfcO7KQtnMReakwtfHbNKh6v1uTpKlzhwoueEJQnPnm #curseforge launcher key
-        run: echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        run: |
+          echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
+
+      - name: Set dynamic versionName
+        env:
+          VERSION_NAME: ${{ needs.check.outputs.version_name }}
+        run: |
+          set -euo pipefail
+
+          echo "Setting versionName to $VERSION_NAME"
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          path = Path("app/build.gradle")
+          text = path.read_text()
+
+          version = os.environ["VERSION_NAME"]
+
+          updated, count = re.subn(
+              r'(versionName\s*=?\s*)"[^"]*"',
+              rf'\1"{version}"',
+              text,
+              count=1
+          )
+
+          if count != 1:
+              raise SystemExit(
+                  "Could not find exactly one versionName in app/build.gradle"
+              )
+
+          path.write_text(updated)
+
+          print(f"versionName set to {version}")
+          PY
+
+          grep -n "versionName" app/build.gradle
 
       - name: Build APKs
         run: |
-          if [ "${{ github.ref_name }}" = "test" ]; then
-            ./gradlew assembleDebug --stacktrace
-          else
-            ./gradlew assembleDebug assembleBeta assembleRelease --stacktrace
-          fi
+          ./gradlew assembleDebug assembleBeta assembleRelease --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4.6.2
@@ -164,21 +318,18 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
 
       - name: Upload Unsigned Release APK
-        if: github.ref_name != 'test'
         uses: actions/upload-artifact@v4.6.2
         with:
           name: LeviLauncher-release-unsigned-apk
           path: app/build/outputs/apk/release/*-unsigned.apk
 
       - name: Upload Beta APK
-        if: github.ref_name != 'test'
         uses: actions/upload-artifact@v4.6.2
         with:
           name: LeviLauncher-beta-apk
           path: app/build/outputs/apk/beta/*.apk
 
       - name: Sign Release APK
-        if: github.ref_name != 'test'
         uses: kevin-david/zipalign-sign-android-release@v2
         id: sign_app
         with:
@@ -191,35 +342,56 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "35.0.0"
 
-      - name: Get version name
-        if: github.ref_name != 'test'
-        id: version
-        run: |
-          VERSION=$(grep 'versionName' app/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
       - name: Rename Signed APK
-        if: github.ref_name != 'test'
         run: |
+          set -euo pipefail
+
           SIGNED_APK="${{ steps.sign_app.outputs.signedReleaseFile }}"
-          if [ -n "$SIGNED_APK" ] && [ -f "$SIGNED_APK" ]; then
-            APK_NAME="levilaunchroid-extra-v${{ steps.version.outputs.version }}-all.apk"
-            cp "$SIGNED_APK" "$APK_NAME"
-            echo "Signed APK renamed to $APK_NAME"
+          VERSION="${{ needs.check.outputs.version_name }}"
+
+          if [ -z "$SIGNED_APK" ] || [ ! -f "$SIGNED_APK" ]; then
+            echo "Signed APK was not produced."
+            exit 1
           fi
 
+          APK_NAME="levilauncher-extra-v${VERSION}-all.apk"
+
+          cp "$SIGNED_APK" "$APK_NAME"
+
+          echo "Created $APK_NAME"
+
       - name: Upload Signed APK Artifact
-        if: github.ref_name != 'test' && hashFiles('levilaunchroid-extra-v*-all.apk') != ''
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: levilaunchroid-extra-v${{ steps.version.outputs.version }}-all
-          path: levilaunchroid-extra-v*-all.apk
+          name: levilauncher-extra-v${{ needs.check.outputs.version_name }}-all
+          path: levilauncher-extra-v${{ needs.check.outputs.version_name }}-all.apk
 
-      - name: Release APK to GitHub Releases
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files:levilaunchroid-extra-v${{ steps.version.outputs.version }}-all.apk
+          tag_name: ${{ needs.check.outputs.release_tag }}
+          name: ${{ needs.check.outputs.release_name }}
+          target_commitish: ${{ github.sha }}
+          prerelease: false
+          make_latest: true
+          generate_release_notes: true
+          files: levilauncher-extra-v${{ needs.check.outputs.version_name }}-all.apk
+          body: |
+            Built against upstream release `${{ needs.check.outputs.upstream_tag }}`.
+
+            Custom version:
+            `${{ needs.check.outputs.version_name }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    
+      - name: Create sync marker
+        run: |
+          set -euo pipefail
+
+          TAG="${{ needs.check.outputs.upstream_tag }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag "sync/$TAG"
+          git push origin "sync/$TAG"
