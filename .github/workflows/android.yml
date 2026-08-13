@@ -3,7 +3,6 @@ name: Android CI
 on:
   schedule:
     - cron: "0 * * * *"
-
   workflow_dispatch:
 
 permissions:
@@ -60,10 +59,9 @@ jobs:
           fi
 
           echo "tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-
           echo "Latest upstream release: $LATEST_TAG"
 
-      - name: Check whether upstream changed
+      - name: Determine whether to build
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,44 +70,82 @@ jobs:
 
           UPSTREAM_TAG="${{ steps.latest.outputs.tag }}"
 
-          echo "Current upstream version: $UPSTREAM_TAG"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual workflow dispatch detected."
+            echo "Forcing build regardless of upstream sync state."
 
-          if git ls-remote --exit-code --tags \
-              "https://github.com/${{ github.repository }}.git" \
-              "refs/tags/sync/$UPSTREAM_TAG" >/dev/null 2>&1; then
+            SHOULD_RUN=true
 
-            echo "Upstream version $UPSTREAM_TAG has already been built."
-            echo "No changes detected."
+          else
+            if git ls-remote --exit-code --tags \
+                "https://github.com/${{ github.repository }}.git" \
+                "refs/tags/sync/$UPSTREAM_TAG" >/dev/null 2>&1; then
 
-            echo "should_run=false" >> "$GITHUB_OUTPUT"
+              echo "Upstream $UPSTREAM_TAG is already synced."
+              echo "Scheduled build will be skipped."
 
+              SHOULD_RUN=false
+
+            else
+              echo "New upstream version detected: $UPSTREAM_TAG"
+              echo "Scheduled build will run."
+
+              SHOULD_RUN=true
+            fi
+          fi
+
+          echo "should_run=$SHOULD_RUN" >> "$GITHUB_OUTPUT"
+
+          if [ "$SHOULD_RUN" = "false" ]; then
             exit 0
           fi
 
-          echo "New upstream version detected: $UPSTREAM_TAG"
-          echo "A build is required."
+          EXISTING=$(
+            gh api \
+              "repos/${{ github.repository }}/releases" \
+              --paginate \
+              --jq '.[].tag_name' \
+              | grep -E "^levilauncher-$UPSTREAM_TAG(-r[0-9]+)?$" \
+              || true
+          )
 
-          echo "should_run=true" >> "$GITHUB_OUTPUT"
+          if [ -z "$EXISTING" ]; then
 
-          #
-          # Every upstream version gets revision -1.
-          #
-          # Example:
-          #   1.5.15 -> 1.5.15-1
-          #   1.5.16 -> 1.5.16-1
-          #
-          VERSION_NAME="${UPSTREAM_TAG}-1"
+            REVISION=1
 
-          RELEASE_TAG="levilauncher-${UPSTREAM_TAG}"
-          RELEASE_NAME="LeviLauncher ${UPSTREAM_TAG}"
+            RELEASE_TAG="levilauncher-$UPSTREAM_TAG"
+            RELEASE_NAME="LeviLauncher $UPSTREAM_TAG"
 
-          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          else
+
+            MAX_REV=$(
+              echo "$EXISTING" \
+                | sed -E \
+                    "s/^levilauncher-$UPSTREAM_TAG-r([0-9]+)$/\1/; \
+                     s/^levilauncher-$UPSTREAM_TAG$/1/" \
+                | sort -n \
+                | tail -1
+            )
+
+            REVISION=$((MAX_REV + 1))
+
+            RELEASE_TAG="levilauncher-$UPSTREAM_TAG-r$REVISION"
+            RELEASE_NAME="LeviLauncher $UPSTREAM_TAG (Update $REVISION)"
+
+          fi
+
+          VERSION_NAME="${UPSTREAM_TAG}-${REVISION}"
+
           echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           echo "release_name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
 
-          echo "Version name: $VERSION_NAME"
-          echo "Release tag:  $RELEASE_TAG"
-          echo "Release name: $RELEASE_NAME"
+          echo
+          echo "Upstream version : $UPSTREAM_TAG"
+          echo "Revision         : $REVISION"
+          echo "versionName      : $VERSION_NAME"
+          echo "Release tag      : $RELEASE_TAG"
+          echo "Release name     : $RELEASE_NAME"
 
   build:
     needs: check
@@ -385,6 +421,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create sync marker
+        if: github.event_name == 'schedule'
         run: |
           set -euo pipefail
 
