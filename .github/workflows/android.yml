@@ -352,7 +352,7 @@ jobs:
         with:
           releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.KEYSTORE_P12_BASE64 }}
-          alias: ${{ secrets.KEYSTORE_ALIAS }}
+          alias: ${{ vars.KEYSTORE_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           zipAlign: true
