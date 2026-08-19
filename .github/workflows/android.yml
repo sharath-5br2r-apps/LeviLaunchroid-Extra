@@ -148,14 +148,13 @@ jobs:
         run: |
           set -euo pipefail
 
+          mkdir -p app
+
           if [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
             echo "HAS_GOOGLE_SERVICES=false" >> "$GITHUB_ENV"
-
             echo "GOOGLE_SERVICES_JSON_BASE64 is not configured; using CI-only Firebase placeholder."
 
-            mkdir -p app
-
-            cat > app/google-services.json <<'JSON'
+            cat > app/google-services.json << 'EOF'
           {
             "project_info": {
               "project_number": "000000000000",
@@ -185,12 +184,9 @@ jobs:
             ],
             "configuration_version": "1"
           }
-          JSON
-
+          EOF
             exit 0
           fi
-
-          mkdir -p app
 
           printf '%s' "${GOOGLE_SERVICES_JSON_BASE64}" \
             | base64 --decode \
@@ -198,7 +194,7 @@ jobs:
 
           python3 -m json.tool app/google-services.json > /dev/null
 
-          python3 - <<'PY'
+          python3 - << 'EOF'
           import json
           import sys
 
@@ -226,7 +222,7 @@ jobs:
               )
 
               sys.exit(1)
-          PY
+          EOF
 
           echo "HAS_GOOGLE_SERVICES=true" >> "$GITHUB_ENV"
 
@@ -259,11 +255,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Accept Licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install Build Tools 35.0.0
-        run: sdkmanager "build-tools;35.0.0"
+      - name: Accept Licenses & Install Build Tools
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "build-tools;35.0.0"
 
       - name: Setup Xmake
         uses: xmake-io/github-action-setup-xmake@v1
@@ -295,14 +290,16 @@ jobs:
 
           echo "Setting versionName to $VERSION_NAME"
 
-          python3 - <<'PY'
+          python3 - << 'EOF'
           from pathlib import Path
           import os
           import re
 
-          path = Path("app/build.gradle")
-          text = path.read_text()
+          gradle_path = Path("app/build.gradle")
+          if not gradle_path.exists():
+              gradle_path = Path("app/build.gradle.kts")
 
+          text = gradle_path.read_text(encoding="utf-8")
           version = os.environ["VERSION_NAME"]
 
           updated, count = re.subn(
@@ -314,15 +311,12 @@ jobs:
 
           if count != 1:
               raise SystemExit(
-                  "Could not find exactly one versionName in app/build.gradle"
+                  f"Could not find exactly one versionName in {gradle_path}"
               )
 
-          path.write_text(updated)
-
-          print(f"versionName set to {version}")
-          PY
-
-          grep -n "versionName" app/build.gradle
+          gradle_path.write_text(updated, encoding="utf-8")
+          print(f"versionName set to {version} in {gradle_path}")
+          EOF
 
       - name: Build APKs
         run: |
@@ -372,9 +366,7 @@ jobs:
           fi
 
           APK_NAME="levilaunchroid-extra-v${VERSION}-all.apk"
-
           cp "$SIGNED_APK" "$APK_NAME"
-
           echo "Created $APK_NAME"
 
       - name: Upload Signed APK Artifact
@@ -386,9 +378,9 @@ jobs:
       - name: Generate Release Notes
         run: |
           set -euo pipefail
-          TAG="${{ needs.check.outputs.release_tag || github.ref_name }}"
-          VER="${{ needs.check.outputs.version_name || steps.version.outputs.version }}"
-          UPSTREAM="${{ needs.check.outputs.upstream_tag || VER }}"
+          TAG="${{ needs.check.outputs.release_tag }}"
+          VER="${{ needs.check.outputs.version_name }}"
+          UPSTREAM="${{ needs.check.outputs.upstream_tag }}"
           REPO="${{ github.repository }}"
 
           echo "Built against upstream release \`$UPSTREAM\`." > release_notes.md
@@ -411,8 +403,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.check.outputs.release_tag || github.ref_name }}
-          name: ${{ needs.check.outputs.release_name || github.ref_name }}
+          tag_name: ${{ needs.check.outputs.release_tag }}
+          name: ${{ needs.check.outputs.release_name }}
           target_commitish: ${{ github.sha }}
           prerelease: false
           make_latest: true
