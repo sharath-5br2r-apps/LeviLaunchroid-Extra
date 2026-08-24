@@ -404,7 +404,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -c '
-          import os, json, glob
+          import os, json, glob, subprocess, zipfile, re
 
           build_json = {}
           apk = "levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk"
@@ -419,13 +419,47 @@ jobs:
                   "CurseForge API integration for mod discovery"
               ]
 
+              min_sdk = "28"
+              native_libraries = []
+              densities = []
+
+              try:
+                  aapt = subprocess.run(["which", "aapt2"], capture_output=True, text=True).stdout.strip() or subprocess.run(["which", "aapt"], capture_output=True, text=True).stdout.strip()
+                  if aapt:
+                      out = subprocess.run([aapt, "dump", "badging", apk], capture_output=True, text=True).stdout
+                      m_sdk = re.search(r"(?:sdkVersion|minSdkVersion):\x27([^\x27]+)\x27", out)
+                      if m_sdk:
+                          min_sdk = m_sdk.group(1)
+                      m_den = re.search(r"densities:\s*\x27([^\x27]+)\x27", out)
+                      if m_den:
+                          densities = [d for d in m_den.group(1).split() if d]
+                      m_nat = re.search(r"native-code:\s*\x27([^\x27]+)\x27", out)
+                      if m_nat:
+                          native_libraries = [n for n in m_nat.group(1).split() if n]
+              except Exception as e:
+                  print(f"aapt dump failed: {e}")
+
+              if not native_libraries and zipfile.is_zipfile(apk):
+                  try:
+                      with zipfile.ZipFile(apk, "r") as z:
+                          libs = set()
+                          for f in z.namelist():
+                              if f.startswith("lib/") and "/" in f[4:]:
+                                  libs.add(f.split("/")[1])
+                          if libs:
+                              native_libraries = sorted(list(libs))
+                  except Exception as e:
+                      print(f"zip inspection failed: {e}")
+
               entry_key = filename.lower()
               build_json[entry_key] = {
                   "name": filename,
                   "arch": "universal",
                   "ext": "apk",
                   "version": "${{ needs.check.outputs.version_name }}",
-                  "min_sdk": "28",
+                  "min_sdk": min_sdk,
+                  "densities": densities,
+                  "native_libraries": native_libraries,
                   "patches": "levilaunchroid-extra",
                   "changelog": changelog,
                   "applied_patches": applied_patches
