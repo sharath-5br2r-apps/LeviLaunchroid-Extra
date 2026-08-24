@@ -400,6 +400,41 @@ jobs:
 
           echo "**Full Changelog**: https://github.com/${REPO}/compare/${TAG}...${TAG}" >> release_notes.md
 
+      - name: Generate build.json
+        run: |
+          set -euo pipefail
+          python3 -c '
+          import os, json, glob
+
+          build_json = {}
+          apk = "levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk"
+          if os.path.exists(apk):
+              filename = os.path.basename(apk)
+              changelog = open("release_notes.md").read() if os.path.exists("release_notes.md") else ""
+              applied_patches = [
+                  "Removed Google Play store verification requirement",
+                  "Removed package name lock (imported MC APKs not limited to com.mojang.minecraftpe)",
+                  "Restored memory editor feature",
+                  "Removed forced version isolation for custom versions",
+                  "CurseForge API integration for mod discovery"
+              ]
+
+              entry_key = filename.lower()
+              build_json[entry_key] = {
+                  "name": filename,
+                  "arch": "universal",
+                  "ext": "apk",
+                  "version": "${{ needs.check.outputs.version_name }}",
+                  "min_sdk": "28",
+                  "patches": "levilaunchroid-extra",
+                  "changelog": changelog,
+                  "applied_patches": applied_patches
+              }
+
+          with open("build.json", "w") as f:
+              json.dump(build_json, f, indent=2)
+          '
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -408,7 +443,9 @@ jobs:
           target_commitish: ${{ github.sha }}
           prerelease: false
           make_latest: true
-          files: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
+          files: |
+            levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
+            build.json
           body_path: release_notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
