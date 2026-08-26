@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.KeyEvent;
 
+import org.levimc.launcher.core.mods.inbuilt.model.ModIds;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
@@ -78,8 +80,13 @@ public class InbuiltModManager {
         prefs.edit().putInt(KEY_AUTOSPRINT_KEY, keyCode).apply();
     }
 
+    private String sharedOverlaySettingsId(String modId) {
+        if (modId != null && modId.startsWith(ModIds.HOTBAR_SLOT + ":")) return ModIds.HOTBAR_SLOT;
+        return modId;
+    }
+
     public int getOverlayButtonSize(String modId) {
-        return prefs.getInt(KEY_OVERLAY_BUTTON_SIZE_PREFIX + modId, DEFAULT_OVERLAY_BUTTON_SIZE);
+        return prefs.getInt(KEY_OVERLAY_BUTTON_SIZE_PREFIX + sharedOverlaySettingsId(modId), DEFAULT_OVERLAY_BUTTON_SIZE);
     }
 
     public void setOverlayButtonSize(String modId, int sizeDp) {
@@ -87,7 +94,7 @@ public class InbuiltModManager {
     }
 
     public int getOverlayOpacity(String modId) {
-        return prefs.getInt(KEY_OVERLAY_OPACITY_PREFIX + modId, DEFAULT_OVERLAY_OPACITY);
+        return prefs.getInt(KEY_OVERLAY_OPACITY_PREFIX + sharedOverlaySettingsId(modId), DEFAULT_OVERLAY_OPACITY);
     }
 
     public void setOverlayOpacity(String modId, int opacity) {
@@ -227,7 +234,7 @@ public class InbuiltModManager {
     }
 
     public boolean isOverlayLocked(String modId) {
-        return prefs.getBoolean(KEY_OVERLAY_LOCK_PREFIX + modId, false);
+        return prefs.getBoolean(KEY_OVERLAY_LOCK_PREFIX + sharedOverlaySettingsId(modId), false);
     }
 
     public void setOverlayLocked(String modId, boolean locked) {
@@ -235,11 +242,24 @@ public class InbuiltModManager {
     }
 
     public boolean isOverlayShowEverywhere(String modId) {
-        return prefs.getBoolean(KEY_OVERLAY_SHOW_EVERYWHERE_PREFIX + modId, false);
+        return prefs.getBoolean(KEY_OVERLAY_SHOW_EVERYWHERE_PREFIX + sharedOverlaySettingsId(modId), false);
     }
 
     public void setOverlayShowEverywhere(String modId, boolean showEverywhere) {
         prefs.edit().putBoolean(KEY_OVERLAY_SHOW_EVERYWHERE_PREFIX + modId, showEverywhere).apply();
+    }
+
+    public void clearOverlaySettings(String modId) {
+        if (modId == null || modId.isEmpty()) return;
+        prefs.edit()
+                .remove(KEY_OVERLAY_BUTTON_SIZE_PREFIX + modId)
+                .remove(KEY_OVERLAY_OPACITY_PREFIX + modId)
+                .remove(KEY_OVERLAY_POSITION_X_PREFIX + modId)
+                .remove(KEY_OVERLAY_POSITION_Y_PREFIX + modId)
+                .remove(KEY_OVERLAY_LOCK_PREFIX + modId)
+                .remove(KEY_OVERLAY_SHOW_EVERYWHERE_PREFIX + modId)
+                .apply();
+        overlayVisibilityRevision.incrementAndGet();
     }
 
     public long getOverlayVisibilityRevision() {
