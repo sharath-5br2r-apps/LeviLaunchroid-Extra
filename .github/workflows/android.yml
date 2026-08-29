@@ -480,7 +480,7 @@ jobs:
               entry_key = filename.lower()
               build_json[entry_key] = {
                   "name": filename,
-                  "arch": "universal",
+                  "arch": "arm64-v8a",
                   "ext": "apk",
                   "version": "${{ needs.check.outputs.version_name }}",
                   "min_sdk": min_sdk,
