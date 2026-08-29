@@ -295,32 +295,9 @@ public class SettingsActivity extends BaseActivity {
             CrashReporter.refreshCrashlyticsCollection(this);
         });
 
-        SwitchMaterial switchMemoryEditor = findViewById(R.id.switch_memory_editor);
-        switchMemoryEditor.setChecked(fs.isMemoryEditorEnabled());
-        switchMemoryEditor.setOnCheckedChangeListener((btn, checked) -> {
-            if (checked && !fs.isMemoryEditorEnabled()) {
-                switchMemoryEditor.setChecked(false);
-                showMemoryEditorWarningDialog(switchMemoryEditor, fs);
-            } else if (!checked) {
-                fs.setMemoryEditorEnabled(false);
-            }
-        });
-
         SwitchMaterial switchManagedLogin = findViewById(R.id.switch_managed_login);
         switchManagedLogin.setChecked(fs.isLauncherManagedMcLoginEnabled());
         switchManagedLogin.setOnCheckedChangeListener((btn, checked) -> fs.setLauncherManagedMcLoginEnabled(checked));
-    }
-
-    private void showMemoryEditorWarningDialog(SwitchMaterial sw, FeatureSettings fs) {
-        CustomAlertDialog dialog = new CustomAlertDialog(this);
-        dialog.setTitleText(getString(R.string.memory_editor_warning_title))
-              .setMessage(getString(R.string.memory_editor_warning_message))
-              .setPositiveButton(getString(R.string.confirm), v -> {
-                  fs.setMemoryEditorEnabled(true);
-                  sw.setChecked(true);
-              })
-              .setNegativeButton(getString(R.string.cancel), null)
-              .show();
     }
 
     private void setupPersonalizeSection() {

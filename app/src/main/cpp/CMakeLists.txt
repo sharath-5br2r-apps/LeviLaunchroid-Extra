@@ -9,6 +9,5 @@ if(ANDROID)
     add_link_options("-Wl,-z,max-page-size=16384")
 endif()
 
-add_subdirectory(memoryeditor)
 ### add_subdirectory(inbuiltmods)
 add_subdirectory(libHttpClient/Build/libHttpClient.Android)
