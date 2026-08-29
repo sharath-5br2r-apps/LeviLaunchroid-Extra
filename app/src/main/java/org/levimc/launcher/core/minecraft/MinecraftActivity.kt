@@ -104,6 +104,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             trace.mark("Prepared runtime consumed")
         } catch (throwable: Throwable) {
             trace.error("MinecraftActivity prepare failed", formatLaunchFailure(throwable))
+            super.onCreate(savedInstanceState)
             returnToLauncherAfterLaunchFailure()
             return
         }
