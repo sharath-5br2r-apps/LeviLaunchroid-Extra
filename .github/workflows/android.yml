@@ -411,7 +411,7 @@ jobs:
             exit 1
           fi
 
-          APK_NAME="levilaunchroid-extra-v${VERSION}-all.apk"
+          APK_NAME="levilaunchroid-extra-v${VERSION}-arm64-v8a.apk"
           cp "$SIGNED_APK" "$APK_NAME"
           echo "Created $APK_NAME"
 
@@ -454,7 +454,7 @@ jobs:
           import os, json, glob, subprocess, zipfile, re
 
           build_json = {}
-          apk = "levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk"
+          apk = "levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a.apk"
           if os.path.exists(apk):
               filename = os.path.basename(apk)
               changelog = open("release_notes.md").read() if os.path.exists("release_notes.md") else ""
@@ -525,7 +525,7 @@ jobs:
           prerelease: false
           make_latest: true
           files: |
-            levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
+            levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a.apk
             build.json
           body_path: release_notes.md
         env:
