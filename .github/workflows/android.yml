@@ -162,9 +162,6 @@ jobs:
           # Start fresh main at upstream tag
           git checkout -B main "refs/tags/$UPSTREAM_TAG"
 
-          # Update submodules at upstream tag
-          git submodule update --init --recursive
-
           # Merge custom patches onto main
           set +e
           git merge custom-patches --no-edit -m "Merge custom patches into upstream $UPSTREAM_TAG"
@@ -177,7 +174,6 @@ jobs:
             exit 1
           fi
 
-          git submodule update --init --recursive
           git push origin main --force
 
   build:
