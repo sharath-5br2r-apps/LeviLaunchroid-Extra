@@ -28,7 +28,7 @@ public class ApkUtils {
             if (info != null) {
                 String packageName = info.packageName;
                 String versionName = info.versionName;
-                if (versionName != null && !versionName.isEmpty()) {
+                if ("com.mojang.minecraftpe".equals(packageName) && versionName != null && !versionName.isEmpty()) {
                     return "Minecraft_" + versionName;
                 }
             }
@@ -50,9 +50,10 @@ public class ApkUtils {
             PackageManager pm = context.getPackageManager();
             PackageInfo info = pm.getPackageArchiveInfo(tempFile.getAbsolutePath(), 0);
             if (info != null) {
+                String packageName = info.packageName;
                 String versionName = info.versionName;
 
-                if (versionName != null && !versionName.isEmpty()) {
+                if ("com.mojang.minecraftpe".equals(packageName) && versionName != null && !versionName.isEmpty()) {
                     return "Minecraft_" + versionName;
                 }
             }
@@ -88,7 +89,7 @@ public class ApkUtils {
                         if (info != null) {
                             String packageName = info.packageName;
                             String versionName = info.versionName;
-                            if (versionName != null && !versionName.isEmpty()) {
+                            if ("com.mojang.minecraftpe".equals(packageName) && versionName != null && !versionName.isEmpty()) {
                                 return "Minecraft_" + versionName;
                             }
                         }

@@ -172,18 +172,6 @@ public class ApkInstaller {
                 postProgress(PROGRESS_COPY_DONE);
                 extractNativeLibsWithProgress(apkFilesToExtract, libTargetDir);
 
-                File baseApkLevi = new File(baseDir, APK_FILE_NAME);
-                if (baseApkLevi.exists()) {
-                    try {
-                        PackageManager pm2 = context.getPackageManager();
-                        PackageInfo info = pm2.getPackageArchiveInfo(baseApkLevi.getAbsolutePath(), 0);
-                        if (info != null && info.packageName != null) {
-                            writeTextFile(new File(baseDir, "package.txt"), info.packageName);
-                        }
-                    } catch (Exception ignored) {
-                    }
-                }
-
                 String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);
                 postProgress(PROGRESS_METADATA_DONE);
                 writeProfileMetadata(metadataDir, dirName, versionName);
@@ -230,11 +218,6 @@ public class ApkInstaller {
         store.loadOrCreate(metadataDir, VersionProfileMetadataStore.Defaults.custom(dirName, versionName));
     }
 
-    private static void writeTextFile(File file, String content) throws IOException {
-        java.io.FileWriter writer = new java.io.FileWriter(file);
-        writer.write(content);
-        writer.close();
-    }
 
     private void postProgress(int progress) {
         int clamped = Math.max(0, Math.min(100, progress));
@@ -315,7 +298,7 @@ public class ApkInstaller {
             if (info != null) {
                 String pkgName = info.packageName;
                 String vName = info.versionName;
-                if (vName != null && !vName.isEmpty()) {
+                if ("com.mojang.minecraftpe".equals(pkgName) && vName != null && !vName.isEmpty()) {
                     return vName;
                 }
             }

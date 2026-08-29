@@ -115,7 +115,7 @@ object MinecraftRuntimePreparer {
                 versionCode,
                 File(versionDir),
                 isInstalled,
-                intent.getStringExtra("MINECRAFT_PACKAGE") ?: MinecraftLauncher.MC_PACKAGE_NAME,
+                MinecraftLauncher.MC_PACKAGE_NAME,
                 ""
             )
         } else if (versionCode.isNotEmpty()) {
@@ -125,7 +125,7 @@ object MinecraftRuntimePreparer {
                 versionCode,
                 null,
                 isInstalled,
-                intent.getStringExtra("MINECRAFT_PACKAGE") ?: MinecraftLauncher.MC_PACKAGE_NAME,
+                MinecraftLauncher.MC_PACKAGE_NAME,
                 ""
             )
         } else {
@@ -158,8 +158,7 @@ object MinecraftRuntimePreparer {
         val mcInfo: ApplicationInfo = if (version.isInstalled) {
             gameManager.getPackageContext().applicationInfo
         } else {
-            val pkgName = version.packageName ?: MinecraftLauncher.MC_PACKAGE_NAME
-            MinecraftLauncher(context).createFakeApplicationInfo(version, pkgName)
+            MinecraftLauncher(context).createFakeApplicationInfo(version, MinecraftLauncher.MC_PACKAGE_NAME)
         }
         launchIntent.putExtra("MC_SRC", mcInfo.sourceDir)
         val splitSourceDirs = mcInfo.splitSourceDirs
