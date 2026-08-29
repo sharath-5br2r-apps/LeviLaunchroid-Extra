@@ -130,15 +130,66 @@ jobs:
           echo "Release tag  : $RELEASE_TAG"
           echo "Release name : $RELEASE_NAME"
 
-  build:
+  sync:
     needs: check
     if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync and merge upstream tag
+        run: |
+          set -euo pipefail
+
+          UPSTREAM_TAG="${{ needs.check.outputs.upstream_tag }}"
+
+          # Preserving custom patches in local branch
+          git branch -m main custom-patches
+          git remote add upstream https://github.com/LiteLDev/LeviLaunchroid.git || true
+          git fetch upstream --tags --quiet
+          git fetch upstream "$UPSTREAM_TAG" --quiet
+
+          # Start fresh main at upstream tag
+          git checkout -B main "refs/tags/$UPSTREAM_TAG"
+
+          # Update submodules at upstream tag
+          git submodule update --init --recursive
+
+          # Merge custom patches onto main
+          set +e
+          git merge custom-patches --no-edit -m "Merge custom patches into upstream $UPSTREAM_TAG"
+          status=$?
+          set -e
+
+          if [ $status -ne 0 ]; then
+            echo "Automatic merge of upstream tag $UPSTREAM_TAG produced conflicts!"
+            git merge --abort || true
+            exit 1
+          fi
+
+          git submodule update --init --recursive
+          git push origin main --force
+
+  build:
+    needs: [check, sync]
+    if: always() && needs.sync.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
           submodules: recursive
 
