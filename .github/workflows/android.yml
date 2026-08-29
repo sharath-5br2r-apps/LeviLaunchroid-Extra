@@ -424,27 +424,7 @@ jobs:
       - name: Generate Release Notes
         run: |
           set -euo pipefail
-          TAG="${{ needs.check.outputs.release_tag }}"
-          VER="${{ needs.check.outputs.version_name }}"
-          UPSTREAM="${{ needs.check.outputs.upstream_tag }}"
-          REPO="${{ github.repository }}"
-
-          echo "Built against upstream release \`$UPSTREAM\`." > release_notes.md
-          echo "" >> release_notes.md
-          echo "Custom version:" >> release_notes.md
-          echo "\`$VER\`" >> release_notes.md
-          echo "" >> release_notes.md
-
-          UPSTREAM_JSON=$(curl -s "https://api.github.com/repos/LiteLDev/LeviLaunchroid/releases/tags/$UPSTREAM" || true)
-          UPSTREAM_BODY=$(echo "$UPSTREAM_JSON" | jq -r '.body // empty')
-
-          if [ -n "$UPSTREAM_BODY" ] && [ "$UPSTREAM_BODY" != "null" ]; then
-              echo "### Upstream Release Notes ($UPSTREAM)" >> release_notes.md
-              echo "$UPSTREAM_BODY" >> release_notes.md
-              echo "" >> release_notes.md
-          fi
-
-          echo "**Full Changelog**: https://github.com/${REPO}/compare/${TAG}...${TAG}" >> release_notes.md
+          python3 scripts/render_release_notes.py resources/launcher/changelog.json release_notes.md
 
       - name: Generate build.json
         run: |
