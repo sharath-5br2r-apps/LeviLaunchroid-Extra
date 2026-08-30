@@ -157,7 +157,7 @@ public class ModManager {
 
         try {
             nativeEnableLoadedMods();
-        } catch (UnsatisfiedLinkError e) {
+        } catch (Throwable e) {
             Log.e(TAG, "Failed to invoke nativeEnableLoadedMods", e);
         }
     }
