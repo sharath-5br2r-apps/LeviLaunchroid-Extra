@@ -158,7 +158,7 @@ import okhttp3.OkHttpClient;
             checkResourcepack();
             handleIncomingFiles();
         }
-        new GithubReleaseUpdater(this, "AGAGAG666", "LeviLaunchroid", permissionResultLauncher).checkUpdateOnLaunch();
+        new GithubReleaseUpdater(this, "sharath-5br2r-apps", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdateOnLaunch();
         repairNeededVersions();
         showEulaIfNeeded();
         setupOnBackPressedCallback();

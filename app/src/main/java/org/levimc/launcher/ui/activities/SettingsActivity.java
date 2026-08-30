@@ -878,7 +878,7 @@ public class SettingsActivity extends BaseActivity {
             updateButtonTapCount = 0;
             triggerEasterEgg();
         } else {
-            new GithubReleaseUpdater(this, "AGAGAG666", "LeviLaunchroid", permissionResultLauncher).checkUpdate();
+            new GithubReleaseUpdater(this, "sharath-5br2r-apps", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdate();
         }
     }
 
