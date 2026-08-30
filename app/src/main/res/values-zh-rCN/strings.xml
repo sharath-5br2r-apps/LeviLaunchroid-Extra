@@ -814,7 +814,6 @@
 
     <string name="unsupported_version_title">不支持的版本</string>
     <string name="unsupported_version_msg">此启动器不支持早于 1.21.80 的 Minecraft 版本。</string>
-<<<<<<< HEAD
     <!-- Completed localization coverage -->
     <string name="delete_account_title">删除账户</string>
     <string name="delete_account_confirm">确定要删除此账户吗？</string>

@@ -288,44 +288,26 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-<<<<<<< HEAD
           restore-keys: |
             gradle-${{ runner.os }}-
-=======
-          restore-keys: gradle-${{ runner.os }}-
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
 
       - name: Cache Android SDK
         uses: actions/cache@v4
         with:
           path: |
             ~/android-sdk
-<<<<<<< HEAD
             ~/Android/Sdk
           key: android-sdk-${{ runner.os }}-${{ hashFiles('.github/workflows/android.yml') }}
           restore-keys: |
             android-sdk-${{ runner.os }}-
-=======
-            ${{ runner }}/Android/Sdk
-          key: android-sdk-${{ runner.os }}-${{ hashFiles('.github/workflows/android.yml') }}
-          restore-keys: android-sdk-${{ runner.os }}-
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-<<<<<<< HEAD
       - name: Accept Licenses & Install Build Tools
         run: |
           yes | sdkmanager --licenses || true
           sdkmanager "build-tools;35.0.0"
-=======
-      - name: Accept Licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install Build Tools 35.0.0
-        run: sdkmanager "build-tools;35.0.0"
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
 
       - name: Setup Xmake
         uses: xmake-io/github-action-setup-xmake@v1
@@ -372,10 +354,6 @@ jobs:
           path: app/build/outputs/apk/beta/*.apk
 
       - name: Sign Release APK
-<<<<<<< HEAD
-=======
-        if: github.ref_name != 'test'
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
         uses: kevin-david/zipalign-sign-android-release@v2
         id: sign_app
         with:
@@ -388,7 +366,6 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "35.0.0"
 
-<<<<<<< HEAD
       - name: Rename Signed APK
         run: |
           set -euo pipefail
@@ -513,46 +490,6 @@ jobs:
 
       - name: Create sync marker
         if: github.event_name == 'schedule'
-=======
-      - name: Get version name
-        if: github.ref_name != 'test'
-        id: version
-        run: |
-          VERSION=$(grep 'versionName' app/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Rename Signed APK
-        if: github.ref_name != 'test'
-        run: |
-          SIGNED_APK="${{ steps.sign_app.outputs.signedReleaseFile }}"
-          if [ -n "$SIGNED_APK" ] && [ -f "$SIGNED_APK" ]; then
-            APK_NAME="LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk"
-            cp "$SIGNED_APK" "$APK_NAME"
-            echo "Signed APK renamed to $APK_NAME"
-          fi
-
-      - name: Upload Signed APK Artifact
-        if: github.ref_name != 'test' && hashFiles('LeviLaunchroid_AG-v*-release.apk') != ''
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release
-          path: LeviLaunchroid_AG-v*-release.apk
-
-      - name: Release APK to GitHub Releases
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Notify Discord
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          APK_URL: "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/LeviLaunchroid_AG-v${{ steps.version.outputs.version }}-release.apk"
-          TAG_NAME: ${{ github.ref_name }}
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
         run: |
           set -euo pipefail
 

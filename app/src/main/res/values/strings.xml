@@ -878,8 +878,6 @@ Migration must complete before LeviLauncher can continue.</string>
 
     <string name="unsupported_version_title">Unsupported Version</string>
     <string name="unsupported_version_msg">This launcher does not support Minecraft versions older than 1.21.80.</string>
-<<<<<<< HEAD
-
     <!-- Generic UI strings added during localization cleanup -->
     <string name="close">Close</string>
     <string name="previous">Previous</string>

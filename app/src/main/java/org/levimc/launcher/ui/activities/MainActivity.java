@@ -175,11 +175,7 @@ import okhttp3.OkHttpClient;
         });
 
         initAccountHeader();
-<<<<<<< HEAD
         binding.getRoot().post(this::showPostEulaFlow);
-=======
-        binding.getRoot().post(this::ensureInitializedAfterEula);
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
     }
 
     @Override
@@ -637,7 +633,6 @@ import okhttp3.OkHttpClient;
         }
     }
 
-<<<<<<< HEAD
     private void requestBasicPermissions() {
         requestStoragePermissionForMigration(() -> {
             if (storageMigrationManager != null) {
@@ -954,11 +949,7 @@ import okhttp3.OkHttpClient;
                 .setPositiveButton(getString(R.string.eula_agree), v -> {
                     getSharedPreferences("LauncherPrefs", MODE_PRIVATE)
                             .edit().putBoolean("eula_accepted", true).apply();
-<<<<<<< HEAD
                     binding.getRoot().postDelayed(this::showPostEulaFlow, 220L);
-=======
-                    binding.getRoot().post(this::ensureInitializedAfterEula);
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
                 })
                 .setNegativeButton(getString(R.string.eula_exit), v -> finishAffinity());
         dia.setCancelable(false);
@@ -970,11 +961,7 @@ import okhttp3.OkHttpClient;
         super.onResume();
         refreshAccountHeaderUI();
         if (!postMigrationInitialized) {
-<<<<<<< HEAD
             showPostEulaFlow();
-=======
-            ensureInitializedAfterEula();
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
             return;
         }
         if (versionManager != null) {
