@@ -925,12 +925,12 @@ import okhttp3.OkHttpClient;
             return getString(R.string.storage_migration_duration_minutes_seconds, minutes, remainingSeconds);
         }
         return getString(R.string.storage_migration_duration_seconds, remainingSeconds);
-=======
+    }
+
     private void ensureInitializedAfterEula() {
         SharedPreferences prefs = getSharedPreferences("LauncherPrefs", MODE_PRIVATE);
         if (!prefs.getBoolean("eula_accepted", false)) return;
         initializeAfterMigrationGate();
->>>>>>> 1e602e764e814071e294890a0ec6798adbb54bac
     }
 
     private void showEulaIfNeeded() {
