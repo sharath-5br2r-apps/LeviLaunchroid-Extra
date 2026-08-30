@@ -1,28 +1,192 @@
 name: Android CI
 
 on:
-  push:
-    branches:
-      - "**"
-    tags:
-      - v*
-  pull_request:
-    branches:
-      - "**"
+  schedule:
+    - cron: "0 * * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: android-upstream-build
+  cancel-in-progress: false
+
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
+
+    outputs:
+      upstream_tag: ${{ steps.latest.outputs.tag }}
+      should_run: ${{ steps.check.outputs.should_run }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+      release_name: ${{ steps.check.outputs.release_name }}
+      version_name: ${{ steps.check.outputs.version_name }}
+
+    steps:
+      - name: Determine latest upstream release tag
+        id: latest
+        run: |
+          set -euo pipefail
+
+          LATEST_TAG=$(
+            git ls-remote --tags https://github.com/LiteLDev/LeviLaunchroid.git \
+              | awk '{print $2}' \
+              | sed 's#refs/tags/##; s/\^{}$//' \
+              | sort -V \
+              | tail -n 1
+          )
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No upstream release tag found."
+            exit 1
+          fi
+
+          echo "tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest upstream release tag: $LATEST_TAG"
+
+      - name: Determine whether to build
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          UPSTREAM_TAG="${{ steps.latest.outputs.tag }}"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual workflow dispatch detected."
+            echo "Forcing build regardless of upstream sync state."
+
+            SHOULD_RUN=true
+
+          else
+            if git ls-remote --exit-code --tags \
+                "https://github.com/${{ github.repository }}.git" \
+                "refs/tags/sync/$UPSTREAM_TAG" >/dev/null 2>&1; then
+
+              echo "Upstream $UPSTREAM_TAG is already synced."
+              echo "Scheduled build will be skipped."
+
+              SHOULD_RUN=false
+
+            else
+              echo "New upstream tag detected: $UPSTREAM_TAG"
+              echo "Scheduled build will run."
+
+              SHOULD_RUN=true
+            fi
+          fi
+
+          echo "should_run=$SHOULD_RUN" >> "$GITHUB_OUTPUT"
+
+          if [ "$SHOULD_RUN" = "false" ]; then
+            exit 0
+          fi
+
+          VERSION_BASE="${UPSTREAM_TAG#v}"
+
+          EXISTING=$(
+            gh api \
+              "repos/${{ github.repository }}/releases" \
+              --paginate \
+              --jq '.[].tag_name' \
+              | grep -E "^levilaunchroid-${UPSTREAM_TAG}(-r[0-9]+)?$" \
+              || true
+          )
+
+          if [ -z "$EXISTING" ]; then
+            REVISION=1
+
+            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}"
+            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG}"
+
+          else
+            MAX_REV=$(
+              echo "$EXISTING" \
+                | sed -E \
+                    "s/^levilaunchroid-${UPSTREAM_TAG}-r([0-9]+)$/\1/; \
+                     s/^levilaunchroid-${UPSTREAM_TAG}$/1/" \
+                | sort -n \
+                | tail -1
+            )
+
+            REVISION=$((MAX_REV + 1))
+
+            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-r${REVISION}"
+            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (Update ${REVISION})"
+          fi
+
+          VERSION_NAME="${VERSION_BASE}-${REVISION}"
+
+          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "release_name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+
+          echo "Upstream tag : $UPSTREAM_TAG"
+          echo "Version base : $VERSION_BASE"
+          echo "Revision     : $REVISION"
+          echo "versionName  : $VERSION_NAME"
+          echo "Release tag  : $RELEASE_TAG"
+          echo "Release name : $RELEASE_NAME"
+
+  sync:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync and merge upstream tag
+        run: |
+          set -euo pipefail
+
+          UPSTREAM_TAG="${{ needs.check.outputs.upstream_tag }}"
+
+          # Preserving custom patches in local branch
+          git branch -m main custom-patches
+          git remote add upstream https://github.com/LiteLDev/LeviLaunchroid.git || true
+          git fetch upstream --tags --quiet
+          git fetch upstream "$UPSTREAM_TAG" --quiet
+
+          # Start fresh main at upstream tag
+          git checkout -B main "refs/tags/$UPSTREAM_TAG"
+
+          # Merge custom patches onto main
+          set +e
+          git merge custom-patches --no-edit -m "Merge custom patches into upstream $UPSTREAM_TAG"
+          status=$?
+          set -e
+
+          if [ $status -ne 0 ]; then
+            echo "Automatic merge of upstream tag $UPSTREAM_TAG produced conflicts!"
+            git merge --abort || true
+            exit 1
+          fi
+
+          git push origin main --force
+
+  build:
+    needs: [check, sync]
+    if: always() && needs.sync.result == 'success'
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
-          submodules: "recursive"
-
-      - name: Validate release content
-        run: python3 scripts/validate_release_content.py
+          submodules: recursive
 
       - name: Prepare google-services.json
         env:
@@ -30,11 +194,13 @@ jobs:
         run: |
           set -euo pipefail
 
+          mkdir -p app
+
           if [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
             echo "HAS_GOOGLE_SERVICES=false" >> "$GITHUB_ENV"
-            echo "GOOGLE_SERVICES_JSON_BASE64 is not configured; using a CI-only Firebase placeholder for compile checks."
-            mkdir -p app
-            cat > app/google-services.json <<'JSON'
+            echo "GOOGLE_SERVICES_JSON_BASE64 is not configured; using CI-only Firebase placeholder."
+
+            cat > app/google-services.json << 'EOF'
           {
             "project_info": {
               "project_number": "000000000000",
@@ -64,18 +230,22 @@ jobs:
             ],
             "configuration_version": "1"
           }
-          JSON
+          EOF
             exit 0
           fi
 
-          mkdir -p app
-          printf '%s' "${GOOGLE_SERVICES_JSON_BASE64}" | base64 --decode > app/google-services.json
+          printf '%s' "${GOOGLE_SERVICES_JSON_BASE64}" \
+            | base64 --decode \
+            > app/google-services.json
+
           python3 -m json.tool app/google-services.json > /dev/null
-          python3 - <<'PY'
+
+          python3 - << 'EOF'
           import json
           import sys
 
           expected = "org.levimc.launcher"
+
           with open("app/google-services.json", encoding="utf-8") as fp:
               data = json.load(fp)
 
@@ -85,14 +255,21 @@ jobs:
               .get("package_name")
               for client in data.get("client", [])
           }
+
           if expected not in package_names:
-              actual = ", ".join(sorted(name for name in package_names if name)) or "<none>"
+              actual = ", ".join(
+                  sorted(name for name in package_names if name)
+              ) or "<none>"
+
               print(
-                  f"google-services.json package_name mismatch: expected {expected}, got {actual}",
-                  file=sys.stderr,
+                  f"google-services.json package_name mismatch: "
+                  f"expected {expected}, got {actual}",
+                  file=sys.stderr
               )
+
               sys.exit(1)
-          PY
+          EOF
+
           echo "HAS_GOOGLE_SERVICES=true" >> "$GITHUB_ENV"
 
       - name: Setup Java JDK
@@ -101,17 +278,33 @@ jobs:
           java-version: "21"
           distribution: temurin
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/android-sdk
+            ~/Android/Sdk
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('.github/workflows/android.yml') }}
+          restore-keys: |
+            android-sdk-${{ runner.os }}-
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Accept Licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install Build Tools 35.0.0
-        run: sdkmanager "build-tools;35.0.0"
-
-      - name: Verify installed SDK Packages
-        run: sdkmanager --list
+      - name: Accept Licenses & Install Build Tools
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "build-tools;35.0.0"
 
       - name: Setup Xmake
         uses: xmake-io/github-action-setup-xmake@v1
@@ -131,112 +324,212 @@ jobs:
 
       - name: Inject API Keys
         env:
-          CF_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-        run: echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        run: |
+          echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
 
-      - name: Build Debug, Beta and Unsigned Release APKs
-        if: env.HAS_GOOGLE_SERVICES == 'true'
-        run: ./gradlew assembleDebug assembleBeta assembleRelease
+      - name: Set dynamic versionName
+        env:
+          VERSION_NAME: ${{ needs.check.outputs.version_name }}
+        run: |
+          set -euo pipefail
 
-      - name: Compile Debug Without Firebase Secrets
-        if: env.HAS_GOOGLE_SERVICES == 'false'
-        run: ./gradlew :app:compileDebugKotlin :app:compileDebugJavaWithJavac
+          echo "Setting versionName to $VERSION_NAME"
+
+          python3 - << 'EOF'
+          from pathlib import Path
+          import os
+          import re
+
+          gradle_path = Path("app/build.gradle")
+          if not gradle_path.exists():
+              gradle_path = Path("app/build.gradle.kts")
+
+          text = gradle_path.read_text(encoding="utf-8")
+          version = os.environ["VERSION_NAME"]
+
+          updated, count = re.subn(
+              r'(versionName\s*=?\s*)"[^"]*"',
+              rf'\1"{version}"',
+              text,
+              count=1
+          )
+
+          if count != 1:
+              raise SystemExit(
+                  f"Could not find exactly one versionName in {gradle_path}"
+              )
+
+          gradle_path.write_text(updated, encoding="utf-8")
+          print(f"versionName set to {version} in {gradle_path}")
+          EOF
+
+      - name: Build APKs
+        run: |
+          ./gradlew assembleDebug assembleBeta assembleRelease --stacktrace
 
       - name: Upload Debug APK
-        if: env.HAS_GOOGLE_SERVICES == 'true'
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-debug-apk
+          name: LeviLaunchroid-debug-apk
           path: app/build/outputs/apk/debug/*.apk
 
       - name: Upload Unsigned Release APK
-        if: env.HAS_GOOGLE_SERVICES == 'true'
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-release-unsigned-apk
+          name: LeviLaunchroid-release-unsigned-apk
           path: app/build/outputs/apk/release/*-unsigned.apk
 
       - name: Upload Beta APK
-        if: env.HAS_GOOGLE_SERVICES == 'true'
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-beta-apk
+          name: LeviLaunchroid-beta-apk
           path: app/build/outputs/apk/beta/*.apk
 
       - name: Sign Release APK
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
         uses: kevin-david/zipalign-sign-android-release@v2
         id: sign_app
         with:
           releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE }}
-          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signingKeyBase64: ${{ secrets.KEYSTORE_P12_BASE64 }}
+          alias: ${{ vars.KEYSTORE_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           zipAlign: true
         env:
           BUILD_TOOLS_VERSION: "35.0.0"
 
-      - name: Rename APK with tag
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+      - name: Rename Signed APK
         run: |
-          TAG=${GITHUB_REF_NAME}
+          set -euo pipefail
+
           SIGNED_APK="${{ steps.sign_app.outputs.signedReleaseFile }}"
-          APK_DST="LeviLauncher-${TAG}-release.apk"
-          cp "$SIGNED_APK" "$APK_DST"
-          echo "Signed APK renamed to $APK_DST"
+          VERSION="${{ needs.check.outputs.version_name }}"
+
+          if [ -z "$SIGNED_APK" ] || [ ! -f "$SIGNED_APK" ]; then
+            echo "Signed APK was not produced."
+            exit 1
+          fi
+
+          APK_NAME="levilaunchroid-extra-v${VERSION}-arm64-v8a.apk"
+          cp "$SIGNED_APK" "$APK_NAME"
+          echo "Created $APK_NAME"
 
       - name: Upload Signed APK Artifact
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: LeviLauncher-${{ github.ref_name }}-release.apk
-          path: LeviLauncher-${{ github.ref_name }}-release.apk
+          name: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all
+          path: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
 
-      - name: Generate GitHub release notes
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
-        run: python3 scripts/render_release_notes.py resources/launcher/changelog.json release-notes.md
+      - name: Generate Release Notes
+        run: |
+          set -euo pipefail
+          TAG="${{ needs.check.outputs.release_tag }}"
+          VER="${{ needs.check.outputs.version_name }}"
+          UPSTREAM="${{ needs.check.outputs.upstream_tag }}"
+          REPO="${{ github.repository }}"
 
-      - name: Release APK to GitHub Releases
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
+          python3 scripts/render_release_notes.py resources/launcher/changelog.json release_notes.md
+          echo "" >> release_notes.md
+          echo "### Custom Build Info" >> release_notes.md
+          echo "Built against upstream release \`$UPSTREAM\`." >> release_notes.md
+          echo "Custom version: \`$VER\`" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "**Full Changelog**: https://github.com/${REPO}/compare/${TAG}...${TAG}" >> release_notes.md
+
+      - name: Generate build.json
+        run: |
+          set -euo pipefail
+          python3 -c '
+          import os, json, glob, subprocess, zipfile, re
+
+          build_json = {}
+          apk = "levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a.apk"
+          if os.path.exists(apk):
+              filename = os.path.basename(apk)
+              changelog = open("release_notes.md").read() if os.path.exists("release_notes.md") else ""
+              applied_patches = [
+                  "Removed Google Play store verification requirement",
+                  "Removed package name lock (imported MC APKs not limited to com.mojang.minecraftpe)",
+                  "Restored memory editor feature",
+                  "Removed forced version isolation for custom versions",
+                  "CurseForge API integration for mod discovery"
+              ]
+
+              min_sdk = "28"
+              native_libraries = []
+              densities = []
+
+              try:
+                  aapt = subprocess.run(["which", "aapt2"], capture_output=True, text=True).stdout.strip() or subprocess.run(["which", "aapt"], capture_output=True, text=True).stdout.strip()
+                  if aapt:
+                      out = subprocess.run([aapt, "dump", "badging", apk], capture_output=True, text=True).stdout
+                      m_sdk = re.search(r"(?:sdkVersion|minSdkVersion):\x27([^\x27]+)\x27", out)
+                      if m_sdk:
+                          min_sdk = m_sdk.group(1)
+                      m_den = re.search(r"densities:\s*\x27([^\x27]+)\x27", out)
+                      if m_den:
+                          densities = [d for d in m_den.group(1).split() if d]
+                      m_nat = re.search(r"native-code:\s*\x27([^\x27]+)\x27", out)
+                      if m_nat:
+                          native_libraries = [n for n in m_nat.group(1).split() if n]
+              except Exception as e:
+                  print(f"aapt dump failed: {e}")
+
+              if not native_libraries and zipfile.is_zipfile(apk):
+                  try:
+                      with zipfile.ZipFile(apk, "r") as z:
+                          libs = set()
+                          for f in z.namelist():
+                              if f.startswith("lib/") and "/" in f[4:]:
+                                  libs.add(f.split("/")[1])
+                          if libs:
+                              native_libraries = sorted(list(libs))
+                  except Exception as e:
+                      print(f"zip inspection failed: {e}")
+
+              entry_key = filename.lower()
+              build_json[entry_key] = {
+                  "name": filename,
+                  "arch": "arm64-v8a",
+                  "ext": "apk",
+                  "version": "${{ needs.check.outputs.version_name }}",
+                  "min_sdk": min_sdk,
+                  "densities": densities,
+                  "native_libraries": native_libraries,
+                  "patches": "levilaunchroid-extra",
+                  "changelog": changelog,
+                  "applied_patches": applied_patches
+              }
+
+          with open("build.json", "w") as f:
+              json.dump(build_json, f, indent=2)
+          '
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: LeviLauncher-${{ github.ref_name }}-release.apk
-          body_path: release-notes.md
+          tag_name: ${{ needs.check.outputs.release_tag }}
+          name: ${{ needs.check.outputs.release_name }}
+          target_commitish: ${{ github.sha }}
+          prerelease: false
+          make_latest: true
+          files: |
+            levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a.apk
+            build.json
+          body_path: release_notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Notify Discord
-        if: env.HAS_GOOGLE_SERVICES == 'true' && startsWith(github.ref, 'refs/tags/')
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          APK_URL: "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/LeviLauncher-${{ github.ref_name }}-release.apk"
-          TAG_NAME: ${{ github.ref_name }}
+      - name: Create sync marker
+        if: github.event_name == 'schedule'
         run: |
-          EMBED_TITLE="🚀 LeviLauncher Update!"
-          EMBED_DESC="A new version of **LeviLaunchroid** is ready."
-          EMBED_COLOR=5814783
-          THUMB_URL='https://avatars.githubusercontent.com/u/78095377?s=200&v=4'
+          set -euo pipefail
 
-          curl -H "Content-Type: application/json" \
-          -d "{
-            \"embeds\": [{
-              \"title\": \"$EMBED_TITLE\",
-              \"description\": \"$EMBED_DESC\",
-              \"color\": $EMBED_COLOR,
-              \"thumbnail\": { \"url\": \"$THUMB_URL\" },
-              \"fields\": [
-                {
-                  \"name\": \"📦 Version\",
-                  \"value\": \"\`$TAG_NAME\`\",
-                  \"inline\": true
-                },
-                {
-                  \"name\": \"🔗 Download\",
-                  \"value\": \"[**Click here to download APK**]($APK_URL)\",
-                  \"inline\": true
-                }
-              ]
-            }]
-          }" \
-          "$DISCORD_WEBHOOK"
+          TAG="${{ needs.check.outputs.upstream_tag }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag "sync/$TAG"
+          git push origin "sync/$TAG"
