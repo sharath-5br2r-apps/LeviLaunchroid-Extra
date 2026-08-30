@@ -28,11 +28,20 @@ def getGitTag() {
     return tag
 }
 
+def resolveVersionName() {
+    def prop = project.findProperty("versionName")
+    if (prop != null && !prop.toString().trim().isEmpty()) {
+        return prop.toString().trim()
+    }
+    def env = System.getenv("VERSION_NAME")
+    if (env != null && !env.trim().isEmpty()) {
+        return env.trim()
+    }
+    return getGitTag()
+}
+
 static def getVersionCodeByTimestamp() {
-    def baseDate = Date.parse("yyyy-MM-dd HH:mm:ss", "2025-01-01 00:00:00")
-    def now = new Date()
-    def diff = (now.time - baseDate.time) / 1000
-    return diff.toInteger()
+    return 2147483647
 }
 
 android {
@@ -43,7 +52,7 @@ android {
         minSdkVersion 28
         targetSdkVersion 35
         versionCode getVersionCodeByTimestamp()
-        versionName getGitTag()
+        versionName resolveVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "CURSEFORGE_API_KEY", "\"${localProperties.getProperty('curseforge.api_key', '')}\""
         ndk {

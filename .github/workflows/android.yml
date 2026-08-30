@@ -328,45 +328,9 @@ jobs:
         run: |
           echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
 
-      - name: Set dynamic versionName
-        env:
-          VERSION_NAME: ${{ needs.check.outputs.version_name }}
-        run: |
-          set -euo pipefail
-
-          echo "Setting versionName to $VERSION_NAME"
-
-          python3 - << 'EOF'
-          from pathlib import Path
-          import os
-          import re
-
-          gradle_path = Path("app/build.gradle")
-          if not gradle_path.exists():
-              gradle_path = Path("app/build.gradle.kts")
-
-          text = gradle_path.read_text(encoding="utf-8")
-          version = os.environ["VERSION_NAME"]
-
-          updated, count = re.subn(
-              r'(versionName\s*=?\s*)"[^"]*"',
-              rf'\1"{version}"',
-              text,
-              count=1
-          )
-
-          if count != 1:
-              raise SystemExit(
-                  f"Could not find exactly one versionName in {gradle_path}"
-              )
-
-          gradle_path.write_text(updated, encoding="utf-8")
-          print(f"versionName set to {version} in {gradle_path}")
-          EOF
-
       - name: Build APKs
         run: |
-          ./gradlew assembleDebug assembleBeta assembleRelease --stacktrace
+          ./gradlew assembleDebug assembleBeta assembleRelease -PversionName="${{ needs.check.outputs.version_name }}" --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4.6.2
