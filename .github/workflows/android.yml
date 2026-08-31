@@ -91,7 +91,7 @@ jobs:
               "repos/${{ github.repository }}/releases" \
               --paginate \
               --jq '.[].tag_name' \
-              | grep -E "^levilaunchroid-${UPSTREAM_TAG}(-r[0-9]+)?$" \
+              | grep -E "^levilaunchroid-${UPSTREAM_TAG}" \
               || true
           )
 
@@ -106,14 +106,18 @@ jobs:
           else
             MAX_REV=$(
               echo "$EXISTING" \
-                | sed -E \
-                    "s/^levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}-r([0-9]+)$/\1/; \
-                     s/^levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}$/1/" \
+                | grep -oE "r[0-9]+$" \
+                | tr -d 'r' \
                 | sort -n \
-                | tail -1
+                | tail -1 \
+                || true
             )
 
-            REVISION=$((MAX_REV + 1))
+            if [ -z "$MAX_REV" ]; then
+              REVISION=1
+            else
+              REVISION=$((MAX_REV + 1))
+            fi
 
             RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}-r${REVISION}"
             RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (${BUILD_DATE} Update ${REVISION})"
