@@ -91,16 +91,14 @@ jobs:
               "repos/${{ github.repository }}/releases" \
               --paginate \
               --jq '.[].tag_name' \
-              | grep -E "^levilaunchroid-${UPSTREAM_TAG}" \
+              | grep -E "^v${UPSTREAM_TAG#v}" \
               || true
           )
 
-          BUILD_DATE=$(date -u +'%Y%m%d')
-
           if [ -z "$EXISTING" ]; then
             REVISION=1
-            RELEASE_TAG="v${VERSION_BASE}-${BUILD_DATE}"
-            RELEASE_NAME="LeviLaunchroid v${VERSION_BASE}-${BUILD_DATE}"
+            RELEASE_TAG="v${VERSION_BASE}-r${REVISION}"
+            RELEASE_NAME="LeviLaunchroid v${VERSION_BASE} (r${REVISION})"
           else
             MAX_REV=$(
               echo "$EXISTING" \
@@ -117,11 +115,11 @@ jobs:
               REVISION=$((MAX_REV + 1))
             fi
 
-            RELEASE_TAG="v${VERSION_BASE}-${BUILD_DATE}-r${REVISION}"
-            RELEASE_NAME="LeviLaunchroid v${VERSION_BASE}-${BUILD_DATE} (Update ${REVISION})"
+            RELEASE_TAG="v${VERSION_BASE}-r${REVISION}"
+            RELEASE_NAME="LeviLaunchroid v${VERSION_BASE} (r${REVISION})"
           fi
 
-          VERSION_NAME="${VERSION_BASE}-${BUILD_DATE}-${REVISION}"
+          VERSION_NAME="${VERSION_BASE}-r${REVISION}"
 
           echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           echo "release_name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
