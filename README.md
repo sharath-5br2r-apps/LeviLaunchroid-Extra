@@ -42,7 +42,7 @@ This is a derivative work of LeviLaunchroid, which is also licensed under Apache
 - This notice is included in the distribution
 
 **Original Copyright:** LeviMC Team
-**Fork Copyright:** AGAGAG666
+**Fork Copyright:** sharath-5br2r-apps
 
 ---
 

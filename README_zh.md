@@ -41,8 +41,8 @@ LeviLaunchroid_AG 是基于 [LeviLaunchroid](https://github.com/LiteLDev/LeviLau
 - 上方文档记录了本 fork 的修改内容
 - 本声明已包含在分发中
 
-**原始版权：** LeviMC Team
-**Fork 版权：** AGAGAG666
+**原版版权：** LeviMC Team
+**Fork 版权：** sharath-5br2r-apps
 
 ---
 
