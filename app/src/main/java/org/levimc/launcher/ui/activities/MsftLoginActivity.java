@@ -353,16 +353,6 @@ public class MsftLoginActivity extends BaseActivity {
         progressOverlay.setVisibility(View.GONE);
         cancelled.set(false);
         redirectHandled = false;
-
-        CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.removeAllCookies(null);
-        cookieManager.flush();
-        if (webView != null) {
-            webView.clearCache(true);
-            webView.clearHistory();
-            webView.clearFormData();
-        }
-
         state = CryptoUtils.randomString(32);
         webView.loadUrl(MsftAuthManager.buildAuthorizeUrl(state));
     }
