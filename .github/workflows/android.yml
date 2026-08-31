@@ -99,10 +99,8 @@ jobs:
 
           if [ -z "$EXISTING" ]; then
             REVISION=1
-
-            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}"
-            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (${BUILD_DATE})"
-
+            RELEASE_TAG="v${VERSION_BASE}-${BUILD_DATE}"
+            RELEASE_NAME="LeviLaunchroid v${VERSION_BASE}-${BUILD_DATE}"
           else
             MAX_REV=$(
               echo "$EXISTING" \
@@ -119,8 +117,8 @@ jobs:
               REVISION=$((MAX_REV + 1))
             fi
 
-            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}-r${REVISION}"
-            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (${BUILD_DATE} Update ${REVISION})"
+            RELEASE_TAG="v${VERSION_BASE}-${BUILD_DATE}-r${REVISION}"
+            RELEASE_NAME="LeviLaunchroid v${VERSION_BASE}-${BUILD_DATE} (Update ${REVISION})"
           fi
 
           VERSION_NAME="${VERSION_BASE}-${BUILD_DATE}-${REVISION}"
