@@ -82,8 +82,10 @@ public class UnifiedModAdapter extends RecyclerView.Adapter<UnifiedModAdapter.Vi
         holder.switchBtn.setChecked(mod.isEnabled());
 
         holder.switchBtn.setOnCheckedChangeListener((btn, isChecked) -> {
-            if (isChecked == mod.isEnabled()) return;
-            mod.setEnabled(isChecked);
+            InbuiltOverlayManager overlayManager = InbuiltOverlayManager.getInstance();
+            if (overlayManager != null) {
+                overlayManager.handleModToggle(mod.getId(), isChecked);
+            }
             if (listener != null) {
                 listener.onModToggled(mod, isChecked);
             }
@@ -109,7 +111,7 @@ public class UnifiedModAdapter extends RecyclerView.Adapter<UnifiedModAdapter.Vi
             titleView.setText(mod.getName());
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_LeviLauncher_Dialog)
+        AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(dialogView)
                 .setPositiveButton(R.string.close, (d, w) -> d.dismiss())
                 .create();
