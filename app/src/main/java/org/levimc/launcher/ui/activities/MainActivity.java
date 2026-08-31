@@ -1517,7 +1517,7 @@ import okhttp3.OkHttpClient;
         TextView tv = new TextView(this);
         tv.setText(name);
         tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
-        tv.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.on_surface));
+        tv.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_primary));
         tv.setFontFeatureSettings(null);
         tv.setPadding(0, (int)(3 * getResources().getDisplayMetrics().density), 0, (int)(3 * getResources().getDisplayMetrics().density));
         tv.setMaxLines(1);
