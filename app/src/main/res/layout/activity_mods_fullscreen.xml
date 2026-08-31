@@ -46,7 +46,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/total_mods"
                         android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/text_secondary" />
 
                     <TextView
                         android:id="@+id/total_mods_count"
@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/enabled_mods"
                         android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/text_secondary" />
 
                     <TextView
                         android:id="@+id/enabled_mods_count"
@@ -100,7 +100,7 @@
                 android:textStyle="bold"
                 android:textAllCaps="false"
                 android:gravity="center"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_vertical" />
 
             <Button
                 android:id="@+id/add_mod_fullscreen_button"
@@ -117,7 +117,7 @@
                 android:textStyle="bold"
                 android:textAllCaps="false"
                 android:gravity="center"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView

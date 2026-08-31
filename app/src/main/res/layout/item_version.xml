@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="15sp"
-            android:textColor="@color/on_surface"
+            android:textColor="@color/on_surface" />
 
         <ImageButton
             android:id="@+id/btn_rename"

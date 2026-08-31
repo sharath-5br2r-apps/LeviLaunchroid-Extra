@@ -6,4 +6,4 @@
     android:textColor="#000000"
     android:textSize="12sp"
     android:padding="10dp"
-    android:background="@color/secondary"
+    android:background="@color/secondary" />

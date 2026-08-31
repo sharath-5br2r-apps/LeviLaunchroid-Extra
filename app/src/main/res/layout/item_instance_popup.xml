@@ -35,7 +35,7 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:singleLine="true"
-            android:ellipsize="end"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/instance_version"
@@ -45,7 +45,7 @@
             android:textColor="@color/text_secondary"
             android:textSize="11sp"
             android:singleLine="true"
-            android:ellipsize="end"
+            android:ellipsize="end" />
     </LinearLayout>
 
     <TextView

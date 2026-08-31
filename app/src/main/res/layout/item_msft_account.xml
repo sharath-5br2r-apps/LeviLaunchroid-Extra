@@ -77,7 +77,7 @@
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:paddingStart="12dp"
-            android:paddingEnd="12dp"
+            android:paddingEnd="12dp" />
 
         <ImageButton
             android:id="@+id/btn_delete"
