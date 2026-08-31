@@ -1501,7 +1501,14 @@ import okhttp3.OkHttpClient;
             }
         }
 
-
+        // Add enabled built-in mods
+        List<org.levimc.launcher.core.mods.inbuilt.UnifiedMod> inbuiltMods =
+                org.levimc.launcher.core.mods.inbuilt.InbuiltModuleProvider.load(this);
+        for (org.levimc.launcher.core.mods.inbuilt.UnifiedMod inbuiltMod : inbuiltMods) {
+            if (inbuiltMod.isEnabled()) {
+                addModNameEntry(inbuiltMod.getName());
+            }
+        }
     }
 
     private void addModNameEntry(String name) {
