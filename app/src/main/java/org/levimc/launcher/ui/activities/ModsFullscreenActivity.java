@@ -270,15 +270,6 @@ public class ModsFullscreenActivity extends BaseActivity {
             }
         }
 
-        List<org.levimc.launcher.core.mods.inbuilt.UnifiedMod> inbuiltMods =
-                org.levimc.launcher.core.mods.inbuilt.InbuiltModuleProvider.load(this);
-        for (org.levimc.launcher.core.mods.inbuilt.UnifiedMod inbuiltMod : inbuiltMods) {
-            total++;
-            if (inbuiltMod.isEnabled()) {
-                enabled++;
-            }
-        }
-
         totalModsCount.setText(String.valueOf(total));
         enabledModsCount.setText(String.valueOf(enabled));
     }
