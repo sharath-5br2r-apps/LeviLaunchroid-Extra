@@ -219,7 +219,7 @@
                         android:textColor="@color/primary"
                         android:textSize="10sp"
                         android:textStyle="bold"
-                        android:textAllCaps="false"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <ScrollView
