@@ -103,6 +103,13 @@ public class UnifiedModAdapter extends RecyclerView.Adapter<UnifiedModAdapter.Vi
     }
 
     private void showConfigDialog(UnifiedMod mod) {
+        if (!mod.hasConfig()) {
+            return;
+        }
+        if (mod.openCustomConfig()) {
+            return;
+        }
+
         View dialogView = LayoutInflater.from(activity).inflate(R.layout.dialog_inbuilt_mod_config, null);
         TextView titleView = dialogView.findViewById(R.id.config_title);
         LinearLayout container = dialogView.findViewById(R.id.config_items_container);
@@ -111,10 +118,20 @@ public class UnifiedModAdapter extends RecyclerView.Adapter<UnifiedModAdapter.Vi
             titleView.setText(mod.getName());
         }
 
+        View btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        View btnSave = dialogView.findViewById(R.id.btn_save);
+
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(dialogView)
-                .setPositiveButton(R.string.close, (d, w) -> d.dismiss())
+                .setNegativeButton(R.string.dialog_negative_cancel, (d, w) -> d.dismiss())
                 .create();
+
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> dialog.dismiss());
+        }
 
         if (container != null) {
             ModConfigView.render(activity, container, mod, () -> {
