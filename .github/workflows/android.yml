@@ -179,7 +179,7 @@ jobs:
 
   build:
     needs: [check, sync]
-    if: always() && needs.sync.result == 'success'
+    if: needs.sync.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
