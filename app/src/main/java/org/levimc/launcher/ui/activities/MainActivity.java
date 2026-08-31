@@ -1,14 +1,19 @@
 package org.levimc.launcher.ui.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.IBinder;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -41,6 +46,7 @@ import org.levimc.launcher.settings.FeatureSettings;
 
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.dialogs.LibsRepairDialog;
 import org.levimc.launcher.ui.dialogs.PlayStoreValidationDialog;
 import org.levimc.launcher.ui.views.MainViewModel;
 import org.levimc.launcher.ui.views.MainViewModelFactory;
@@ -52,12 +58,17 @@ import org.levimc.launcher.util.PermissionsHandler;
 import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.PlayStoreValidator;
 import org.levimc.launcher.util.ResourcepackHandler;
+import org.levimc.launcher.util.StorageMigrationManager;
+import org.levimc.launcher.util.StorageMigrationService;
 import org.levimc.launcher.util.UIHelper;
 import org.levimc.launcher.core.content.ContentManager;
 import java.util.ArrayList;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 
  import android.widget.Button;
  import android.widget.ProgressBar;
@@ -94,6 +105,7 @@ import okhttp3.OkHttpClient;
     private ApkImportManager apkImportManager;
     private MainViewModel viewModel;
     private VersionManager versionManager;
+    private StorageMigrationManager storageMigrationManager;
     private ActivityResultLauncher<Intent> permissionResultLauncher;
     private ActivityResultLauncher<Intent> apkImportResultLauncher;
     private ActivityResultLauncher<String> notificationPermissionLauncher;
@@ -114,6 +126,8 @@ import okhttp3.OkHttpClient;
     private LoadingDialog accountLoadingDialog;
     private ActivityResultLauncher<Intent> accountLoginLauncher;
     private OnBackPressedCallback onBackPressedCallback;
+    private boolean migrationPromptShown;
+    private boolean migrationPromptCheckInFlight;
     private boolean postMigrationInitialized;
     private boolean postEulaFlowRunning;
     private StorageMigrationService storageMigrationService;
@@ -144,6 +158,7 @@ import okhttp3.OkHttpClient;
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,14 +167,7 @@ import okhttp3.OkHttpClient;
         closeLauncherRestartAfterFirstDraw();
         setupNavBar();
         setupManagersAndHandlers();
-        setTextMinecraftVersion();
-        updateViewModelVersion();
-        if (!forwardIncomingMinecraftResourceToRunningGame()) {
-            checkResourcepack();
-            handleIncomingFiles();
-        }
         new GithubReleaseUpdater(this, "sharath-5br2r-apps", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdateOnLaunch();
-        repairNeededVersions();
         showEulaIfNeeded();
         setupOnBackPressedCallback();
 
@@ -208,6 +216,7 @@ import okhttp3.OkHttpClient;
             }
         });
     }
+
 
     private void initAccountHeader() {
         signInButton = findViewById(R.id.nav_sign_in_button);
@@ -512,6 +521,7 @@ import okhttp3.OkHttpClient;
     private void setupManagersAndHandlers() {
         languageManager = new LanguageManager(this);
         languageManager.applySavedLanguage();
+        storageMigrationManager = new StorageMigrationManager(this);
         permissionResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -927,12 +937,6 @@ import okhttp3.OkHttpClient;
         return getString(R.string.storage_migration_duration_seconds, remainingSeconds);
     }
 
-    private void ensureInitializedAfterEula() {
-        SharedPreferences prefs = getSharedPreferences("LauncherPrefs", MODE_PRIVATE);
-        if (!prefs.getBoolean("eula_accepted", false)) return;
-        initializeAfterMigrationGate();
-    }
-
     private void showEulaIfNeeded() {
         SharedPreferences prefs = getSharedPreferences("LauncherPrefs", MODE_PRIVATE);
         if (!prefs.getBoolean("eula_accepted", false)) {
@@ -960,6 +964,10 @@ import okhttp3.OkHttpClient;
     protected void onResume() {
         super.onResume();
         refreshAccountHeaderUI();
+        if (StorageMigrationService.isMigrationRunning(this)) {
+            resumeStorageMigrationService();
+            return;
+        }
         if (!postMigrationInitialized) {
             showPostEulaFlow();
             return;
@@ -976,8 +984,14 @@ import okhttp3.OkHttpClient;
 
     @Override
     protected void onStop() {
+        unbindStorageMigrationService();
         super.onStop();
     }
+
+
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -1102,6 +1116,7 @@ import okhttp3.OkHttpClient;
         Intent intent = new Intent(this, ModsFullscreenActivity.class);
         startActivity(intent);
     }
+
 
     private void launchGame() {
         if (!isVersionManagerReady()) return;
@@ -1366,6 +1381,7 @@ import okhttp3.OkHttpClient;
         startActivity(intent);
     }
 
+
      public void setTextMinecraftVersion() {
         if (binding == null) return;
         if (versionManager == null) {
@@ -1485,6 +1501,7 @@ import okhttp3.OkHttpClient;
             }
         }
 
+
     }
 
     private void addModNameEntry(String name) {
@@ -1507,6 +1524,9 @@ import okhttp3.OkHttpClient;
 
     @Override
     protected void onDestroy() {
+        unbindStorageMigrationService();
+        dismissStorageMigrationDialog(null);
+        storageMigrationExecutor.shutdownNow();
         super.onDestroy();
     }
 
