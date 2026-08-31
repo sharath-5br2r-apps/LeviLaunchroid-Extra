@@ -13,7 +13,6 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="?attr/colorPrimary"
-        android:fontFamily="@font/misans"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -40,7 +39,6 @@
             android:id="@+id/tv_progress_percent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/misans"
             android:gravity="end"
             android:minWidth="54dp"
             android:text="0%"

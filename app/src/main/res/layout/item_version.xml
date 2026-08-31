@@ -29,7 +29,6 @@
             android:layout_weight="1"
             android:textSize="15sp"
             android:textColor="@color/on_surface"
-            android:fontFamily="@font/misans"/>
 
         <ImageButton
             android:id="@+id/btn_rename"

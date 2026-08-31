@@ -41,7 +41,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/minecraft"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -51,7 +50,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="@string/bedrock_edition"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -90,7 +88,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/current_instance"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="10sp" />
 
@@ -100,7 +97,6 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="72dp"
                                 android:maxWidth="180dp"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
@@ -136,7 +132,6 @@
                         android:textSize="13sp"
                         android:textStyle="bold"
                         android:textAllCaps="false"
-                        android:fontFamily="@font/misans"
                         android:insetTop="0dp"
                         android:insetBottom="0dp" />
                 </LinearLayout>
@@ -168,7 +163,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="@font/misans"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -203,7 +197,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/mods_section_title"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -227,7 +220,6 @@
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:textAllCaps="false"
-                        android:fontFamily="@font/misans" />
                 </LinearLayout>
 
                 <ScrollView
@@ -270,7 +262,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/content_mgmt_section_title"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -282,7 +273,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/view_all"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp"
                         android:clickable="true"
@@ -329,7 +319,6 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/worlds_category"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 
@@ -338,7 +327,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -349,7 +337,6 @@
                                 android:layout_marginStart="4dp"
                                 android:layout_marginBottom="1dp"
                                 android:text="›"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -378,7 +365,6 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/resource_packs_category"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 
@@ -387,7 +373,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -398,7 +383,6 @@
                                 android:layout_marginStart="4dp"
                                 android:layout_marginBottom="1dp"
                                 android:text="›"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -427,7 +411,6 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/behavior_packs_category"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 
@@ -436,7 +419,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -447,7 +429,6 @@
                                 android:layout_marginStart="4dp"
                                 android:layout_marginBottom="1dp"
                                 android:text="›"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -470,7 +451,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/misc_section_title"
-                    android:fontFamily="@font/misans"
                     android:textColor="@color/on_surface"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -516,7 +496,6 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/curseforge_title"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 
@@ -552,7 +531,6 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/microsoft_accounts"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 
@@ -588,7 +566,6 @@
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/quick_launch"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 

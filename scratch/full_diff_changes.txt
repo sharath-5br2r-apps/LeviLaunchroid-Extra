@@ -7380,7 +7380,6 @@
 +        title.setText(section.title);
 +        title.setTextColor(context.getColor(R.color.on_surface));
 +        title.setTextSize(14);
-+        title.setTypeface(context.getResources().getFont(R.font.misans), Typeface.BOLD);
 +        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
 +                LinearLayout.LayoutParams.MATCH_PARENT,
 +                LinearLayout.LayoutParams.WRAP_CONTENT
@@ -7407,7 +7406,6 @@
 +            text.setText(item.text);
 +            text.setTextColor(context.getColor(R.color.text_secondary));
 +            text.setTextSize(13);
-+            text.setTypeface(context.getResources().getFont(R.font.misans));
 +            text.setLineSpacing(0, 1.08f);
 +            text.setLayoutParams(new LinearLayout.LayoutParams(
 +                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -10714,14 +10712,12 @@
 -                android:textStyle="bold"
 -                android:textSize="18sp"
 -                android:textColor="@color/primary"
--                android:fontFamily="@font/misans"/>
 +                android:layout_marginStart="10dp"
 +                android:layout_weight="1"
 +                android:orientation="vertical">
 +                <TextView
 +                    android:layout_width="wrap_content"
 +                    android:layout_height="wrap_content"
-+                    android:fontFamily="@font/misans"
 +                    android:text="@string/ms_login_title"
 +                    android:textColor="@color/on_surface"
 +                    android:textSize="18sp"
@@ -10730,7 +10726,6 @@
 +                <TextView
 +                    android:layout_width="wrap_content"
 +                    android:layout_height="wrap_content"
-+                    android:fontFamily="@font/misans"
 +                    android:text="@string/ms_login_header_subtitle"
 +                    android:textColor="@color/text_secondary"
 +                    android:textSize="12sp" />
@@ -10770,7 +10765,6 @@
 +                        android:layout_width="match_parent"
 +                        android:layout_height="wrap_content"
 +                        android:layout_marginTop="10dp"
-+                        android:fontFamily="@font/misans"
 +                        android:gravity="center"
 +                        android:text="@string/ms_choose_login_method"
 +                        android:textColor="@color/on_surface"
@@ -10781,7 +10775,6 @@
 +                        android:layout_width="match_parent"
 +                        android:layout_height="wrap_content"
 +                        android:layout_marginTop="6dp"
-+                        android:fontFamily="@font/misans"
 +                        android:gravity="center"
 +                        android:maxWidth="620dp"
 +                        android:text="@string/ms_choose_login_method_desc"
@@ -10794,7 +10787,6 @@
 +                        android:layout_height="wrap_content"
 +                        android:layout_marginTop="14dp"
 +                        android:background="@drawable/card_background_small"
-+                        android:fontFamily="@font/misans"
 +                        android:gravity="center"
 +                        android:maxWidth="720dp"
 +                        android:padding="12dp"
@@ -10837,7 +10829,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="8dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:gravity="center"
 +                                    android:text="@string/ms_device_code_option_title"
 +                                    android:textColor="@color/on_surface"
@@ -10848,7 +10839,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="6dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:gravity="center"
 +                                    android:minHeight="44dp"
 +                                    android:text="@string/ms_device_code_login_desc"
@@ -10860,7 +10850,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="54dp"
 +                                    android:layout_marginTop="12dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:maxLines="1"
 +                                    android:text="@string/ms_device_code_login"
 +                                    android:textAllCaps="false"
@@ -10900,7 +10889,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="8dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:gravity="center"
 +                                    android:text="@string/ms_webview_option_title"
 +                                    android:textColor="@color/on_surface"
@@ -10911,7 +10899,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="6dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:gravity="center"
 +                                    android:minHeight="44dp"
 +                                    android:text="@string/ms_webview_login_desc"
@@ -10924,7 +10911,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="54dp"
 +                                    android:layout_marginTop="12dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:maxLines="1"
 +                                    android:text="@string/ms_webview_login"
 +                                    android:textAllCaps="false"
@@ -10965,7 +10951,6 @@
 +                        <TextView
 +                            android:layout_width="match_parent"
 +                            android:layout_height="wrap_content"
-+                            android:fontFamily="@font/misans"
 +                            android:text="@string/ms_device_code_title"
 +                            android:textColor="@color/on_surface"
 +                            android:textSize="24sp"
@@ -10975,7 +10960,6 @@
 +                            android:layout_width="match_parent"
 +                            android:layout_height="wrap_content"
 +                            android:layout_marginTop="6dp"
-+                            android:fontFamily="@font/misans"
 +                            android:text="@string/ms_device_code_instructions"
 +                            android:textColor="@color/text_secondary"
 +                            android:textSize="14sp" />
@@ -10998,7 +10982,6 @@
 +                                <TextView
 +                                    android:layout_width="wrap_content"
 +                                    android:layout_height="wrap_content"
-+                                    android:fontFamily="@font/misans"
 +                                    android:text="@string/ms_device_code_label"
 +                                    android:textAllCaps="true"
 +                                    android:textColor="@color/text_secondary"
@@ -11035,7 +11018,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="12dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:gravity="center"
 +                                    android:text="@string/ms_device_code_requesting"
 +                                    android:textColor="@color/primary"
@@ -11049,7 +11031,6 @@
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="8dp"
 +                                    android:background="@drawable/bg_filter_chip"
-+                                    android:fontFamily="@font/misans"
 +                                    android:paddingHorizontal="12dp"
 +                                    android:paddingVertical="5dp"
 +                                    android:textColor="@color/text_secondary"
@@ -11081,7 +11062,6 @@
 +                                <TextView
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
-+                                    android:fontFamily="@font/misans"
 +                                    android:text="@string/ms_device_code_step_title"
 +                                    android:textColor="@color/on_surface"
 +                                    android:textSize="17sp"
@@ -11091,7 +11071,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="wrap_content"
 +                                    android:layout_marginTop="5dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:text="@string/ms_device_code_browser_note"
 +                                    android:textColor="@color/text_secondary"
 +                                    android:textSize="13sp" />
@@ -11106,7 +11085,6 @@
 +                                    android:autoSizeStepGranularity="1sp"
 +                                    android:autoSizeTextType="uniform"
 +                                    android:enabled="false"
-+                                    android:fontFamily="@font/misans"
 +                                    android:maxLines="1"
 +                                    android:text="@string/ms_device_code_open_browser"
 +                                    android:textAllCaps="false"
@@ -11123,7 +11101,6 @@
 +                                    android:layout_height="52dp"
 +                                    android:layout_marginTop="10dp"
 +                                    android:enabled="false"
-+                                    android:fontFamily="@font/misans"
 +                                    android:maxLines="1"
 +                                    android:text="@string/ms_device_code_copy"
 +                                    android:textAllCaps="false"
@@ -11151,7 +11128,6 @@
 +                                        android:layout_height="wrap_content"
 +                                        android:layout_marginStart="12dp"
 +                                        android:layout_weight="1"
-+                                        android:fontFamily="@font/misans"
 +                                        android:text="@string/ms_device_code_requesting"
 +                                        android:textColor="@color/text_secondary"
 +                                        android:textSize="13sp" />
@@ -11163,7 +11139,6 @@
 +                                    android:layout_width="match_parent"
 +                                    android:layout_height="48dp"
 +                                    android:layout_marginTop="8dp"
-+                                    android:fontFamily="@font/misans"
 +                                    android:text="@string/ms_choose_other_method"
 +                                    android:textAllCaps="false" />
 +                            </LinearLayout>
@@ -11190,7 +11165,6 @@
 +                    android:layout_height="48dp"
 +                    android:layout_gravity="bottom|end"
 +                    android:layout_margin="14dp"
-+                    android:fontFamily="@font/misans"
 +                    android:text="@string/ms_choose_other_method"
 +                    android:textAllCaps="false"
 +                    app:cornerRadius="10dp" />
@@ -11217,7 +11191,6 @@
 -            android:text="@string/ms_login_starting"
 -            android:textColor="@color/on_surface"
 -            android:textSize="14sp"
--            android:fontFamily="@font/misans"/>
 +            app:cardBackgroundColor="@color/surface"
 +            app:cardCornerRadius="16dp"
 +            app:cardElevation="8dp">
@@ -11240,7 +11213,6 @@
 +                    android:layout_width="match_parent"
 +                    android:layout_height="wrap_content"
 +                    android:layout_marginTop="14dp"
-+                    android:fontFamily="@font/misans"
 +                    android:gravity="center"
 +                    android:text="@string/ms_login_exchanging"
 +                    android:textColor="@color/on_surface"
@@ -11276,7 +11248,6 @@
 +            <TextView
 +                android:layout_width="wrap_content"
 +                android:layout_height="wrap_content"
-+                android:fontFamily="@font/misans"
 +                android:text="@string/news_title"
 +                android:textColor="@color/primary"
 +                android:textSize="22sp"
@@ -11286,7 +11257,6 @@
 +                android:layout_width="wrap_content"
 +                android:layout_height="wrap_content"
 +                android:layout_marginTop="3dp"
-+                android:fontFamily="@font/misans"
 +                android:text="@string/news_subtitle"
 +                android:textColor="@color/text_secondary"
 +                android:textSize="13sp" />
@@ -11298,7 +11268,6 @@
 +            android:layout_width="wrap_content"
 +            android:layout_height="36dp"
 +            android:layout_marginEnd="8dp"
-+            android:fontFamily="@font/misans"
 +            android:insetTop="0dp"
 +            android:insetBottom="0dp"
 +            android:minHeight="0dp"
@@ -11349,7 +11318,6 @@
 +            android:layout_gravity="center"
 +            android:drawableTop="@drawable/ic_nav_news"
 +            android:drawablePadding="10dp"
-+            android:fontFamily="@font/misans"
 +            android:gravity="center"
 +            android:text="@string/news_empty"
 +            android:textColor="@color/text_secondary"
@@ -11369,7 +11337,6 @@
 -                                android:layout_height="wrap_content"
 -                                android:layout_weight="1"
 -                                android:text="@string/memory_editor_enable"
--                                android:fontFamily="@font/misans"
 -                                android:textColor="@color/on_surface"
 -                                android:textSize="15sp"
 -                                android:textStyle="bold" />
@@ -11404,7 +11371,6 @@
 -                                    android:layout_height="wrap_content"
 -                                    android:layout_weight="1"
 -                                    android:text="Resource Pack Cache Limit"
--                                    android:fontFamily="@font/misans"
 -                                    android:textColor="@color/on_surface"
 -                                    android:textSize="15sp"
 -                                    android:textStyle="bold" />
@@ -11413,7 +11379,6 @@
 -                                    android:layout_width="wrap_content"
 -                                    android:layout_height="wrap_content"
 -                                    android:text="256 MB"
--                                    android:fontFamily="@font/misans"
 -                                    android:textColor="@color/primary"
 -                                    android:textSize="14sp"
 -                                    android:textStyle="bold" />
@@ -11461,7 +11426,6 @@
 +            android:layout_width="wrap_content"
 +            android:layout_height="22dp"
 +            android:background="@drawable/bg_news_category"
-+            android:fontFamily="@font/misans"
 +            android:gravity="center"
 +            android:paddingHorizontal="10dp"
 +            android:textColor="@color/primary"
@@ -11473,7 +11437,6 @@
 +            android:layout_width="match_parent"
 +            android:layout_height="wrap_content"
 +            android:layout_marginTop="10dp"
-+            android:fontFamily="@font/misans"
 +            android:textColor="@color/on_surface"
 +            android:textSize="16sp"
 +            android:textStyle="bold" />
@@ -11483,7 +11446,6 @@
 +            android:layout_width="match_parent"
 +            android:layout_height="wrap_content"
 +            android:layout_marginTop="5dp"
-+            android:fontFamily="@font/misans"
 +            android:lineSpacingMultiplier="1.08"
 +            android:textColor="@color/text_secondary"
 +            android:textSize="13sp" />
@@ -11829,7 +11791,6 @@
 +                    android:layout_width="wrap_content"
 +                    android:layout_height="20dp"
 +                    android:background="@drawable/bg_news_category"
-+                    android:fontFamily="@font/misans"
 +                    android:gravity="center"
 +                    android:paddingHorizontal="9dp"
 +                    android:textColor="@color/primary"
@@ -11842,7 +11803,6 @@
 +                    android:layout_height="20dp"
 +                    android:layout_marginStart="7dp"
 +                    android:background="@drawable/bg_news_important"
-+                    android:fontFamily="@font/misans"
 +                    android:gravity="center"
 +                    android:paddingHorizontal="9dp"
 +                    android:text="@string/news_important"
@@ -11857,7 +11817,6 @@
 +                    android:layout_height="wrap_content"
 +                    android:layout_marginStart="10dp"
 +                    android:layout_weight="1"
-+                    android:fontFamily="@font/misans"
 +                    android:gravity="end"
 +                    android:textColor="@color/text_secondary"
 +                    android:textSize="10sp" />
@@ -11868,7 +11827,6 @@
 +                android:layout_width="match_parent"
 +                android:layout_height="wrap_content"
 +                android:layout_marginTop="8dp"
-+                android:fontFamily="@font/misans"
 +                android:textColor="@color/on_surface"
 +                android:textSize="16sp"
 +                android:textStyle="bold" />
@@ -11878,7 +11836,6 @@
 +                android:layout_width="match_parent"
 +                android:layout_height="wrap_content"
 +                android:layout_marginTop="5dp"
-+                android:fontFamily="@font/misans"
 +                android:lineSpacingMultiplier="1.08"
 +                android:textColor="@color/text_secondary"
 +                android:textSize="13sp" />
@@ -11890,7 +11847,6 @@
 +                android:layout_marginTop="9dp"
 +                android:drawableEnd="@drawable/ic_news_open"
 +                android:drawablePadding="5dp"
-+                android:fontFamily="@font/misans"
 +                android:gravity="center"
 +                android:text="@string/news_read_more"
 +                android:textColor="@color/primary"

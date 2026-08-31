@@ -6,7 +6,6 @@
     android:textStyle="bold"
     android:textSize="14sp"
     android:textColor="@color/on_surface"
-    android:fontFamily="@font/misans"
     android:layout_marginBottom="2dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>

@@ -31,7 +31,6 @@
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="@color/on_surface"
-            android:fontFamily="@font/misans" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,15 +38,12 @@
             android:text="@string/copyright"
             android:textSize="13sp"
             android:textColor="@color/text_secondary"
-            android:fontFamily="@font/misans" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/font_license"
             android:textSize="13sp"
             android:textColor="@color/text_secondary"
-            android:fontFamily="@font/misans" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -56,7 +52,6 @@
             android:autoLink="web"
             android:textSize="13sp"
             android:textColor="@color/primary"
-            android:fontFamily="@font/misans" />
     </LinearLayout>
 
 </LinearLayout>

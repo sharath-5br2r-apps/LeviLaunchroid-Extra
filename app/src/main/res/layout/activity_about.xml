@@ -25,7 +25,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/about_page_title"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/primary"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -35,7 +34,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/about_subtitle"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
@@ -51,7 +49,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_authors_title"
-                    android:fontFamily="@font/misans"
                     android:textColor="@color/on_surface"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -86,7 +83,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/about_author_name"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -99,7 +95,6 @@
                                 android:paddingHorizontal="8dp"
                                 android:gravity="center"
                                 android:text="@string/about_author_badge"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_primary"
                                 android:textSize="9sp"
                                 android:textStyle="bold"
@@ -111,7 +106,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="@string/about_author_role"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -130,7 +124,6 @@
                         android:paddingHorizontal="14dp"
                         android:gravity="center"
                         android:text="@string/about_patreon"
-                        android:fontFamily="@font/misans"
                         android:textColor="#FF9800"
                         android:textSize="11sp"
                         android:textStyle="bold"
@@ -148,7 +141,6 @@
                         android:paddingHorizontal="14dp"
                         android:gravity="center"
                         android:text="@string/about_afdian"
-                        android:fontFamily="@font/misans"
                         android:textColor="#E91E63"
                         android:textSize="11sp"
                         android:textStyle="bold"
@@ -196,7 +188,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="MrPokeG"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -209,7 +200,6 @@
                                 android:paddingHorizontal="8dp"
                                 android:gravity="center"
                                 android:text="@string/maintainer"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_primary"
                                 android:textSize="9sp"
                                 android:textStyle="bold"
@@ -221,7 +211,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="@string/maintainer"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -240,7 +229,6 @@
                         android:paddingHorizontal="14dp"
                         android:gravity="center"
                         android:text="@string/youtube"
-                        android:fontFamily="@font/misans"
                         android:textColor="#FF0000"
                         android:textSize="11sp"
                         android:textStyle="bold"
@@ -271,7 +259,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/about_source_title"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -291,7 +278,6 @@
                             android:paddingHorizontal="14dp"
                             android:gravity="center"
                             android:text="@string/about_github_repo"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="11sp"
                             android:background="@drawable/bg_link_chip_blue"
@@ -308,7 +294,6 @@
                             android:paddingHorizontal="14dp"
                             android:gravity="center"
                             android:text="@string/about_github_org"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="11sp"
                             android:background="@drawable/bg_link_chip_blue"
@@ -323,7 +308,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="@string/about_license_note"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -341,7 +325,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/about_contribute_title"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -353,7 +336,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/about_contribute_desc"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
@@ -370,7 +352,6 @@
                             android:paddingHorizontal="14dp"
                             android:gravity="center"
                             android:text="@string/about_issues"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="11sp"
                             android:background="@drawable/bg_link_chip_blue"
@@ -387,7 +368,6 @@
                             android:paddingHorizontal="14dp"
                             android:gravity="center"
                             android:text="@string/about_star_fork"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/primary"
                             android:textSize="11sp"
                             android:textStyle="bold"

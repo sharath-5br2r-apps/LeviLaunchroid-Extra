@@ -36,7 +36,6 @@
             android:textColorHint="@color/text_secondary"
             android:textColor="@color/on_surface"
             android:textSize="13sp"
-            android:fontFamily="@font/misans"
             android:inputType="text"
             android:imeOptions="actionSearch"
             android:singleLine="true" />
@@ -49,7 +48,6 @@
         android:textColor="@color/on_surface"
         android:textSize="13sp"
         android:textStyle="bold"
-        android:fontFamily="@font/misans"
         android:gravity="center"
         android:layout_marginTop="8dp"
         android:layout_marginHorizontal="12dp"

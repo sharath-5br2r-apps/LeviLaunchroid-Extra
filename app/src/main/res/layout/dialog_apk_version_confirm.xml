@@ -16,7 +16,6 @@
         android:textColor="?attr/colorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:fontFamily="@font/misans"/>
 
     <EditText
         android:id="@+id/edit_version_name"

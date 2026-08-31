@@ -36,7 +36,6 @@
             android:textStyle="bold"
             android:singleLine="true"
             android:ellipsize="end"
-            android:fontFamily="@font/misans" />
 
         <TextView
             android:id="@+id/instance_version"
@@ -47,7 +46,6 @@
             android:textSize="11sp"
             android:singleLine="true"
             android:ellipsize="end"
-            android:fontFamily="@font/misans" />
     </LinearLayout>
 
     <TextView
@@ -58,7 +56,6 @@
         android:gravity="center"
         android:textSize="10sp"
         android:textStyle="bold"
-        android:fontFamily="@font/misans"
         android:textColor="@color/primary"
         android:background="@drawable/bg_mod_menu_toggle"
         android:visibility="gone" />

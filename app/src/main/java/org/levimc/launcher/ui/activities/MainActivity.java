@@ -1510,7 +1510,6 @@ import okhttp3.OkHttpClient;
         tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
         tv.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.on_surface));
         tv.setFontFeatureSettings(null);
-        tv.setTypeface(getResources().getFont(R.font.misans));
         tv.setPadding(0, (int)(3 * getResources().getDisplayMetrics().density), 0, (int)(3 * getResources().getDisplayMetrics().density));
         tv.setMaxLines(1);
         tv.setEllipsize(android.text.TextUtils.TruncateAt.END);

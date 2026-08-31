@@ -24,7 +24,6 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:textAllCaps="false"
-        android:fontFamily="@font/misans"
         android:enabled="false"/>
 
     <TextView
@@ -34,7 +33,6 @@
         android:text="@string/pagination_page_one"
         android:layout_marginHorizontal="16dp"
         android:textSize="14sp"
-        android:fontFamily="@font/misans"
         android:textColor="@color/on_surface"/>
 
     <Button
@@ -54,7 +52,6 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:textAllCaps="false"
-        android:fontFamily="@font/misans"
         android:enabled="false"/>
 
 </LinearLayout>

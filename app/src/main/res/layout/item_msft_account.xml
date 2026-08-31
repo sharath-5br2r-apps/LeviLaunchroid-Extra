@@ -29,7 +29,6 @@
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="@color/on_surface"
-                android:fontFamily="@font/misans"/>
 
             <TextView
                 android:id="@+id/active_badge"
@@ -53,7 +52,6 @@
             android:layout_height="wrap_content"
             android:textColor="#888888"
             android:textSize="12sp"
-            android:fontFamily="@font/misans"
             android:layout_marginTop="2dp"
             android:maxLines="1"
             android:ellipsize="end"/>
@@ -80,7 +78,6 @@
             android:minHeight="0dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:fontFamily="@font/misans"/>
 
         <ImageButton
             android:id="@+id/btn_delete"

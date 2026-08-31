@@ -25,6 +25,5 @@
         android:textStyle="bold"
         android:gravity="center"
         android:textColor="@color/on_surface"
-        android:fontFamily="@font/misans" />
 
 </LinearLayout>

@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:text="@string/mod_name_placeholder"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
             android:textColor="@color/on_surface"
             android:textSize="15sp"
@@ -43,7 +42,6 @@
             android:layout_height="wrap_content"
             android:text="@string/mod_load_order_placeholder"
             android:textSize="12sp"
-            android:fontFamily="@font/misans"
             android:textColor="@color/text_secondary"
             android:visibility="gone"/>
 
@@ -53,7 +51,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:background="@drawable/bg_mod_page_badge"
-            android:fontFamily="@font/misans"
             android:paddingHorizontal="7dp"
             android:paddingVertical="2dp"
             android:text="@string/mod_config_badge"
@@ -76,7 +73,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
@@ -88,7 +84,6 @@
             android:layout_marginStart="24dp"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"

@@ -18,7 +18,6 @@
     <!-- About -->
     <string name="about_title">☕ 关于</string>
     <string name="copyright">©2024–2026 LeviMC. 保留所有权利</string>
-    <string name="font_license">本软件使用 Misans 字体</string>
     <string name="quick_actions_title">快捷操作</string>
     <string name="content_management_subtitle">管理世界、资源包和行为包</string>
     <string name="import_apk_subtitle">从 APK 或 APKS 文件安装 Minecraft</string>

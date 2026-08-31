@@ -16,7 +16,6 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/primary"
-        android:fontFamily="@font/misans"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
