@@ -95,29 +95,31 @@ jobs:
               || true
           )
 
+          BUILD_DATE=$(date -u +'%Y%m%d')
+
           if [ -z "$EXISTING" ]; then
             REVISION=1
 
-            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}"
-            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG}"
+            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}"
+            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (${BUILD_DATE})"
 
           else
             MAX_REV=$(
               echo "$EXISTING" \
                 | sed -E \
-                    "s/^levilaunchroid-${UPSTREAM_TAG}-r([0-9]+)$/\1/; \
-                     s/^levilaunchroid-${UPSTREAM_TAG}$/1/" \
+                    "s/^levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}-r([0-9]+)$/\1/; \
+                     s/^levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}$/1/" \
                 | sort -n \
                 | tail -1
             )
 
             REVISION=$((MAX_REV + 1))
 
-            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-r${REVISION}"
-            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (Update ${REVISION})"
+            RELEASE_TAG="levilaunchroid-${UPSTREAM_TAG}-${BUILD_DATE}-r${REVISION}"
+            RELEASE_NAME="LeviLaunchroid ${UPSTREAM_TAG} (${BUILD_DATE} Update ${REVISION})"
           fi
 
-          VERSION_NAME="${VERSION_BASE}-${REVISION}"
+          VERSION_NAME="${VERSION_BASE}-${BUILD_DATE}-${REVISION}"
 
           echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           echo "release_name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
@@ -382,8 +384,8 @@ jobs:
       - name: Upload Signed APK Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all
-          path: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-all.apk
+          name: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a
+          path: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a.apk
 
       - name: Generate Release Notes
         run: |
