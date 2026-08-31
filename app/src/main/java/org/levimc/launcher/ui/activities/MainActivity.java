@@ -1157,7 +1157,6 @@ import okhttp3.OkHttpClient;
                         .show();
                 return;
             }
-            org.levimc.launcher.core.auth.storage.XalExporter.exportActiveAccount(this);
         }
 
         trace.mark("Launch validation completed", version.directoryName + " " + version.versionCode);
