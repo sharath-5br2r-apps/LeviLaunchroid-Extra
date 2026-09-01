@@ -1,10 +1,10 @@
 package org.levimc.launcher.core.mods.inbuilt.nativemod;
 
-public final class PojavControlsMod {
+public final class AutoSprintMod {
     private static boolean initialized;
     private static boolean initAttempted;
 
-    private PojavControlsMod() {}
+    private AutoSprintMod() {}
 
     public static synchronized boolean initialize() {
         if (initialized) return true;
@@ -17,16 +17,16 @@ public final class PojavControlsMod {
 
     public static boolean setEnabled(boolean enabled) {
         if (enabled && !initialize()) return false;
+        if (!InbuiltModsNative.isLoaded()) return !enabled;
         if (initialized) nativeSetEnabled(enabled);
         return !enabled || initialized;
     }
 
-    public static native void nativeSendKey(int keyCode, boolean down);
-    public static native void nativeSendMouseButton(int androidButton, boolean down);
-    public static native void nativeSendScroll(float vertical);
-    public static native void nativeSendLookDelta(float deltaX, float deltaY);
-    public static native void nativeSendPointer(float x, float y);
+    public static boolean isEnabled() {
+        return initialized && nativeIsEnabled();
+    }
 
     private static native boolean nativeInit();
     private static native void nativeSetEnabled(boolean enabled);
+    private static native boolean nativeIsEnabled();
 }
