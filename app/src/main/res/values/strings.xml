@@ -745,6 +745,8 @@ Migration must complete before LeviLauncher can continue.</string>
     <string name="mod_config_color_green_short">G</string>
     <string name="mod_config_color_blue_short">B</string>
     <string name="mod_config_color_hex_hint" formatted="false">#AARRGGBB</string>
+    <string name="hud_editor_drag_hint">Drag to move panel</string>
+    <string name="hud_editor_drag_description">HUD Editor. Drag this area to move the panel.</string>
 
     <!-- Options Editor -->
     <string name="edit_options">Edit Options</string>
@@ -1054,4 +1056,12 @@ Migration must complete before LeviLauncher can continue.</string>
     <string name="memory_editor_overlay">Overlay</string>
     <string name="memory_editor_base_address">MC Base: %1$s</string>
     <string name="memory_editor_base_loading">Loading base address…</string>
+
+    <string name="mod_config_category_slots">Slots</string>
+    <string name="mod_config_category_appearance">Appearance</string>
+    <string name="mod_config_category_behavior">Behavior</string>
+    <string name="mod_config_category_motion">Motion</string>
+    <string name="mod_config_category_button">Button</string>
+    <string name="mod_config_visible_slots">Visible Slots</string>
+    <string name="mod_config_hotbar_slot_section">Hotbar Slot %1$d</string>
 </resources>
