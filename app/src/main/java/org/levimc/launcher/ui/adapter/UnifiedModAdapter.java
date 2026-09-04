@@ -121,10 +121,13 @@ public class UnifiedModAdapter extends RecyclerView.Adapter<UnifiedModAdapter.Vi
         View btnCancel = dialogView.findViewById(R.id.btn_cancel);
         View btnSave = dialogView.findViewById(R.id.btn_save);
 
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+        AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_LeviLauncher_Dialog)
                 .setView(dialogView)
-                .setNegativeButton(R.string.dialog_negative_cancel, (d, w) -> d.dismiss())
                 .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
 
         if (btnCancel != null) {
             btnCancel.setOnClickListener(v -> dialog.dismiss());
