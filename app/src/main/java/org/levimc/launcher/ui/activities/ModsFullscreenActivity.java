@@ -37,6 +37,8 @@ public class ModsFullscreenActivity extends BaseActivity {
 
     private RecyclerView modsRecycler;
     private ModsAdapter modsAdapter;
+    private RecyclerView inbuiltRecycler;
+    private org.levimc.launcher.ui.adapter.UnifiedModAdapter inbuiltAdapter;
     private MainViewModel viewModel;
     private TextView totalModsCount;
     private TextView enabledModsCount;
@@ -133,6 +135,16 @@ public class ModsFullscreenActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
+        inbuiltRecycler = findViewById(R.id.inbuilt_mods_recycler_fullscreen);
+        if (inbuiltRecycler != null) {
+            List<org.levimc.launcher.core.mods.inbuilt.UnifiedMod> inbuiltMods =
+                    org.levimc.launcher.core.mods.inbuilt.InbuiltModuleProvider.load(this);
+            inbuiltAdapter = new org.levimc.launcher.ui.adapter.UnifiedModAdapter(this, inbuiltMods);
+            inbuiltRecycler.setLayoutManager(new LinearLayoutManager(this));
+            inbuiltRecycler.setAdapter(inbuiltAdapter);
+            inbuiltAdapter.setOnModToggleListener((mod, enabled) -> updateModsCount());
+        }
+
         modsRecycler = findViewById(R.id.mods_recycler_fullscreen);
         modsAdapter = new ModsAdapter(new ArrayList<>());
         modsRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -240,8 +252,6 @@ public class ModsFullscreenActivity extends BaseActivity {
         modsAdapter.setItemTouchHelper(itemTouchHelper);
     }
 
-
-
     private void updateModsUI(List<Mod> mods) {
         if (modsAdapter != null) {
             modsAdapter.updateMods(mods);
@@ -257,7 +267,7 @@ public class ModsFullscreenActivity extends BaseActivity {
     }
 
     private void updateModsCount() {
-        List<Mod> mods = viewModel.getModsLiveData().getValue();
+        List<Mod> mods = viewModel != null ? viewModel.getModsLiveData().getValue() : null;
         
         int total = (mods != null ? mods.size() : 0);
         int enabled = 0;
@@ -270,6 +280,15 @@ public class ModsFullscreenActivity extends BaseActivity {
             }
         }
 
+        List<org.levimc.launcher.core.mods.inbuilt.UnifiedMod> inbuiltMods =
+                org.levimc.launcher.core.mods.inbuilt.InbuiltModuleProvider.load(this);
+        for (org.levimc.launcher.core.mods.inbuilt.UnifiedMod inbuiltMod : inbuiltMods) {
+            total++;
+            if (inbuiltMod.isEnabled()) {
+                enabled++;
+            }
+        }
+
         totalModsCount.setText(String.valueOf(total));
         enabledModsCount.setText(String.valueOf(enabled));
     }
@@ -278,6 +297,11 @@ public class ModsFullscreenActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         setupViews();
+        if (inbuiltAdapter != null) {
+            List<org.levimc.launcher.core.mods.inbuilt.UnifiedMod> inbuiltMods =
+                    org.levimc.launcher.core.mods.inbuilt.InbuiltModuleProvider.load(this);
+            inbuiltAdapter.updateMods(inbuiltMods);
+        }
         if (viewModel != null) {
             viewModel.refreshMods();
         }

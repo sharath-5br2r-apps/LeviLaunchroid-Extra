@@ -10,7 +10,6 @@
         android:id="@+id/meta_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/misans"
         android:textColor="@color/text_secondary"
         android:textSize="11sp" />
 
@@ -19,7 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:fontFamily="@font/misans"
         android:textColor="@color/on_surface"
         android:textSize="13sp"
         android:textStyle="bold" />

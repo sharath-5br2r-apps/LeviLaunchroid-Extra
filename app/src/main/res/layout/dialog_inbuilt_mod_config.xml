@@ -13,8 +13,7 @@
         android:paddingBottom="4dp"
         android:textColor="?attr/colorPrimary"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/misans" />
+        android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
@@ -33,6 +32,7 @@
         android:fillViewport="true">
 
         <LinearLayout
+            android:id="@+id/config_items_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -50,8 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/overlay_button_size"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                    android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -79,8 +78,7 @@
                         android:gravity="center"
                         android:text="48dp"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/misans" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -97,8 +95,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/overlay_button_opacity"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                    android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -126,8 +123,7 @@
                         android:gravity="center"
                         android:text="100%"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/misans" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -151,8 +147,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/overlay_button_lock"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/misans" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -160,7 +155,6 @@
                         android:text="@string/overlay_button_lock_desc"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="12sp"
-                        android:fontFamily="@font/misans"
                         android:alpha="0.8" />
 
                 </LinearLayout>
@@ -189,8 +183,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/autosprint_keybind_label"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/btn_autosprint_keybind"
@@ -201,7 +194,6 @@
                     android:text="CTRL_LEFT"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp"
-                    android:fontFamily="@font/misans"
                     android:textAllCaps="true" />
 
             </LinearLayout>
@@ -220,8 +212,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/cursor_sensitivity_label"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                    android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -249,8 +240,7 @@
                         android:gravity="center"
                         android:text="120%"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/misans" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -269,8 +259,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/zoom_level_label"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                    android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -298,8 +287,7 @@
                         android:gravity="center"
                         android:text="50%"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/misans" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
@@ -309,8 +297,7 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/zoom_keybind_label"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/btn_zoom_keybind"
@@ -321,7 +308,6 @@
                     android:text="C"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp"
-                    android:fontFamily="@font/misans"
                     android:textAllCaps="true" />
 
             </LinearLayout>
@@ -352,7 +338,6 @@
             android:text="@string/dialog_negative_cancel"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
-            android:fontFamily="@font/misans"
             android:textAllCaps="false"
             android:layout_marginEnd="12dp" />
 
@@ -364,7 +349,6 @@
             android:text="@string/save"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="14sp"
-            android:fontFamily="@font/misans"
             android:textAllCaps="false" />
 
     </LinearLayout>

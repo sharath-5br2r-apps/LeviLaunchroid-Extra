@@ -24,7 +24,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
                 android:text="@string/news_title"
                 android:textColor="@color/primary"
                 android:textSize="22sp"
@@ -34,7 +33,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:fontFamily="@font/misans"
                 android:text="@string/news_subtitle"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp" />
@@ -46,7 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_marginEnd="8dp"
-            android:fontFamily="@font/misans"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minHeight="0dp"
@@ -97,7 +94,6 @@
             android:layout_gravity="center"
             android:drawableTop="@drawable/ic_nav_news"
             android:drawablePadding="10dp"
-            android:fontFamily="@font/misans"
             android:gravity="center"
             android:text="@string/news_empty"
             android:textColor="@color/text_secondary"

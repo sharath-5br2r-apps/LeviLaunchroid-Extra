@@ -169,7 +169,7 @@ import okhttp3.OkHttpClient;
         setupNavBar();
         setupManagersAndHandlers();
         if (!isInstanceShortcutIntent()) {
-            new GithubReleaseUpdater(this, "LiteLDev", "LeviLaunchroid", permissionResultLauncher).checkUpdateOnLaunch();
+            new GithubReleaseUpdater(this, "sharath-5br2r-apps", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdateOnLaunch();
         }
         showEulaIfNeeded();
         setupOnBackPressedCallback();
@@ -1217,13 +1217,6 @@ import okhttp3.OkHttpClient;
             }
         }
 
-        if (!PlayStoreValidator.isMinecraftFromPlayStore(this)) {
-            trace.warning("Launch cancelled", "Minecraft is not verified as Play Store install");
-            binding.launchButton.setEnabled(true);
-            PlayStoreValidationDialog.showNotFromPlayStoreDialog(this);
-            return;
-        }
-
         trace.mark("Launch validation completed", version.directoryName + " " + version.versionCode);
         try {
             Intent launchIntent = createMinecraftLaunchIntent();
@@ -1579,7 +1572,14 @@ import okhttp3.OkHttpClient;
             }
         }
 
-
+        // Add enabled built-in mods
+        List<org.levimc.launcher.core.mods.inbuilt.UnifiedMod> inbuiltMods =
+                org.levimc.launcher.core.mods.inbuilt.InbuiltModuleProvider.load(this);
+        for (org.levimc.launcher.core.mods.inbuilt.UnifiedMod inbuiltMod : inbuiltMods) {
+            if (inbuiltMod.isEnabled()) {
+                addModNameEntry(inbuiltMod.getName());
+            }
+        }
     }
 
     private void addModNameEntry(String name) {
@@ -1588,7 +1588,6 @@ import okhttp3.OkHttpClient;
         tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
         tv.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.on_surface));
         tv.setFontFeatureSettings(null);
-        tv.setTypeface(getResources().getFont(R.font.misans));
         tv.setPadding(0, (int)(3 * getResources().getDisplayMetrics().density), 0, (int)(3 * getResources().getDisplayMetrics().density));
         tv.setMaxLines(1);
         tv.setEllipsize(android.text.TextUtils.TruncateAt.END);

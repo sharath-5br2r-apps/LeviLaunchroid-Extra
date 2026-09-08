@@ -19,7 +19,6 @@
             android:layout_width="wrap_content"
             android:layout_height="22dp"
             android:background="@drawable/bg_news_category"
-            android:fontFamily="@font/misans"
             android:gravity="center"
             android:paddingHorizontal="10dp"
             android:textColor="@color/primary"
@@ -31,7 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:fontFamily="@font/misans"
             android:textColor="@color/on_surface"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -41,7 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:fontFamily="@font/misans"
             android:lineSpacingMultiplier="1.08"
             android:textColor="@color/text_secondary"
             android:textSize="13sp" />
