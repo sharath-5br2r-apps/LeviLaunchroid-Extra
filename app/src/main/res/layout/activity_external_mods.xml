@@ -25,7 +25,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
                 android:text="@string/external_mods"
                 android:textColor="@color/primary"
                 android:textSize="20sp"
@@ -36,7 +35,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -48,7 +46,6 @@
             android:layout_height="38dp"
             android:layout_marginStart="8dp"
             android:backgroundTint="#5865F2"
-            android:fontFamily="@font/misans"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minHeight="0dp"
@@ -106,7 +103,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:background="@null"
-                android:fontFamily="@font/misans"
                 android:hint="@string/external_mods_search_hint"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
@@ -122,7 +118,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:fontFamily="@font/misans"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minHeight="0dp"
@@ -150,7 +145,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:fontFamily="@font/misans"
         android:textColor="@color/text_secondary"
         android:textSize="11sp"
         android:visibility="gone" />
@@ -185,7 +179,6 @@
             android:layout_gravity="center"
             android:drawableTop="@drawable/ic_plugin"
             android:drawablePadding="10dp"
-            android:fontFamily="@font/misans"
             android:gravity="center"
             android:text="@string/external_mods_empty"
             android:textColor="@color/text_secondary"

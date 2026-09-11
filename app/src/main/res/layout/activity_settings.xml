@@ -235,7 +235,6 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="@font/misans"
                                     android:text="@string/foreground_service"
                                     android:textColor="@color/on_surface"
                                     android:textSize="15sp"
@@ -245,7 +244,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/misans"
                                     android:text="@string/foreground_service_desc"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
@@ -254,7 +252,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:fontFamily="@font/misans"
                                     android:text="@string/foreground_service_warning"
                                     android:textColor="#FFB74D"
                                     android:textSize="11sp" />
