@@ -460,6 +460,8 @@ jobs:
                   "arch": "arm64-v8a",
                   "ext": "apk",
                   "version": "${{ needs.check.outputs.version_name }}",
+                  "os": "android",
+                  "isVanilla": False,
                   "min_sdk": min_sdk,
                   "densities": densities,
                   "native_libraries": native_libraries,
