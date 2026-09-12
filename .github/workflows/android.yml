@@ -463,11 +463,13 @@ jobs:
                   "os": "android",
                   "isVanilla": False,
                   "min_sdk": min_sdk,
+                  "dpi": "nodpi",
                   "densities": densities,
                   "native_libraries": native_libraries,
                   "patches": "levilaunchroid-extra",
                   "changelog": changelog,
-                  "applied_patches": applied_patches
+                  "applied_patches": applied_patches,
+                  "removed_patches": []
               }
 
           with open("build.json", "w") as f:
