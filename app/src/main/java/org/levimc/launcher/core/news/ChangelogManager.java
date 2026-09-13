@@ -161,7 +161,6 @@ public final class ChangelogManager {
         title.setText(section.title);
         title.setTextColor(context.getColor(R.color.on_surface));
         title.setTextSize(14);
-        title.setTypeface(context.getResources().getFont(R.font.misans), Typeface.BOLD);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -188,7 +187,6 @@ public final class ChangelogManager {
             text.setText(item.text);
             text.setTextColor(context.getColor(R.color.text_secondary));
             text.setTextSize(13);
-            text.setTypeface(context.getResources().getFont(R.font.misans));
             text.setLineSpacing(0, 1.08f);
             text.setLayoutParams(new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));

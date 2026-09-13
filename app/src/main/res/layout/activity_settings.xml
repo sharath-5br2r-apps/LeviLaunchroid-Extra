@@ -26,7 +26,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_title"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/primary"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -36,7 +35,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/settings_subtitle"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
@@ -60,7 +58,6 @@
                         android:paddingHorizontal="16dp"
                         android:gravity="center"
                         android:text="@string/settings_tab_basic"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/on_primary"
                         android:textSize="13sp"
                         android:textStyle="bold"
@@ -76,7 +73,6 @@
                         android:paddingHorizontal="16dp"
                         android:gravity="center"
                         android:text="@string/settings_tab_personalize"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:background="@drawable/bg_tab_unselected"
@@ -91,7 +87,6 @@
                         android:paddingHorizontal="16dp"
                         android:gravity="center"
                         android:text="@string/settings_tab_updates"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:background="@drawable/bg_tab_unselected"
@@ -106,7 +101,6 @@
                         android:paddingHorizontal="16dp"
                         android:gravity="center"
                         android:text="@string/settings_tab_about"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:background="@drawable/bg_tab_unselected"
@@ -121,7 +115,6 @@
                         android:paddingHorizontal="16dp"
                         android:gravity="center"
                         android:text="@string/settings_tab_migration"
-                        android:fontFamily="@font/misans"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:background="@drawable/bg_tab_unselected"
@@ -167,7 +160,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/language"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="15sp"
                                     android:textStyle="bold" />
@@ -177,7 +169,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -209,7 +200,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/show_logcat_overlay"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -245,7 +235,6 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="@font/misans"
                                     android:text="@string/foreground_service"
                                     android:textColor="@color/on_surface"
                                     android:textSize="15sp"
@@ -255,7 +244,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/misans"
                                     android:text="@string/foreground_service_desc"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
@@ -264,7 +252,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:fontFamily="@font/misans"
                                     android:text="@string/foreground_service_warning"
                                     android:textColor="#FFB74D"
                                     android:textSize="11sp" />
@@ -297,13 +284,36 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/crash_upload"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
 
                             <com.google.android.material.switchmaterial.SwitchMaterial
                                 android:id="@+id/switch_crash_upload"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:thumbTint="@color/primary"
+                                android:trackTint="#555555" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/memory_editor_enable"
+                                android:textColor="@color/on_surface"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switch_memory_editor"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:thumbTint="@color/primary"
@@ -329,7 +339,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/launcher_managed_mc_login"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -362,7 +371,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/theme_title"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -372,7 +380,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="@string/settings_theme_desc"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -406,7 +413,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="6dp"
                                     android:text="@string/theme_follow_system"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -440,7 +446,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="6dp"
                                     android:text="@string/theme_light"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -474,7 +479,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="6dp"
                                     android:text="@string/theme_dark"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -493,7 +497,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/theme_color_title"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -503,7 +506,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="@string/theme_color_desc"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -512,7 +514,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@string/preset_colors"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -536,7 +537,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@string/more_colors"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -560,7 +560,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:text="@string/custom_color_hex_rgb"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -578,7 +577,6 @@
                                 android:background="@drawable/bg_spinner_outline"
                                 android:paddingHorizontal="12dp"
                                 android:hint="@string/custom_color_hint"
-                                android:fontFamily="@font/misans"
                                 android:textSize="13sp"
                                 android:textColor="@color/on_surface" />
                             <Button
@@ -588,7 +586,6 @@
                                 android:layout_marginStart="8dp"
                                 android:text="@string/apply"
                                 android:textAllCaps="false"
-                                android:fontFamily="@font/misans"
                                 android:textSize="12sp"
                                 android:textColor="@color/on_primary"
                                 android:backgroundTint="@color/primary" />
@@ -607,7 +604,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/bg_image_title"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -617,7 +613,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="@string/bg_image_desc"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -648,7 +643,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="@string/bg_image_blur"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -658,7 +652,6 @@
                                     android:layout_width="56dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="end"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -685,7 +678,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="@string/bg_image_brightness"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -695,7 +687,6 @@
                                     android:layout_width="56dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="end"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -725,7 +716,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/bg_image_none"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -740,7 +730,6 @@
                                 android:insetBottom="0dp"
                                 android:layout_marginEnd="8dp"
                                 android:text="@string/clear"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="11sp"
                                 android:textAllCaps="false"
@@ -757,7 +746,6 @@
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
                                 android:text="@string/select_image"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_primary"
                                 android:textSize="11sp"
                                 android:textAllCaps="false"
@@ -784,7 +772,6 @@
                             android:id="@+id/version_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -802,7 +789,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="40dp"
                             android:text="@string/check_update"
-                            android:fontFamily="@font/misans"
                             android:textSize="13sp"
                             android:textColor="@color/on_primary"
                             android:backgroundTint="@color/primary"
@@ -821,7 +807,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/preloader_sigs_title"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -831,7 +816,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -841,7 +825,6 @@
                             android:layout_height="40dp"
                             android:layout_marginTop="12dp"
                             android:text="@string/preloader_sigs_update"
-                            android:fontFamily="@font/misans"
                             android:textSize="13sp"
                             android:textColor="@color/on_primary"
                             android:backgroundTint="@color/primary"
@@ -875,7 +858,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/about_title"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -885,15 +867,12 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="@string/copyright"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/font_license"
-                                android:fontFamily="@font/misans"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
                         </LinearLayout>
@@ -951,7 +930,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/shared_storage_layout_title"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="15sp"
                                     android:textStyle="bold" />
@@ -962,7 +940,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
                                     android:text="@string/shared_storage_layout_desc"
-                                    android:fontFamily="@font/misans"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -982,7 +959,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
                             android:background="@drawable/bg_spinner_outline"
-                            android:fontFamily="@font/misans"
                             android:padding="10dp"
                             android:textColor="@color/on_surface"
                             android:textSize="12sp" />
@@ -1000,7 +976,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/migration_cleanup_title"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -1010,7 +985,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="@string/migration_cleanup_desc"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -1020,7 +994,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
                             android:background="@drawable/bg_spinner_outline"
-                            android:fontFamily="@font/misans"
                             android:padding="10dp"
                             android:textColor="@color/on_surface"
                             android:textSize="12sp" />
@@ -1030,7 +1003,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -1040,7 +1012,6 @@
                             android:layout_height="40dp"
                             android:layout_marginTop="14dp"
                             android:text="@string/migration_cleanup_button"
-                            android:fontFamily="@font/misans"
                             android:textSize="13sp"
                             android:textColor="@color/on_primary"
                             android:backgroundTint="@color/primary"

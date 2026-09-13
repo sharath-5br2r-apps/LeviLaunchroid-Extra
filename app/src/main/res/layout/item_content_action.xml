@@ -23,7 +23,6 @@
         android:layout_marginStart="12dp"
         android:layout_weight="1"
         android:ellipsize="end"
-        android:fontFamily="@font/misans"
         android:maxLines="1"
         android:textColor="@color/on_surface"
         android:textSize="14sp" />

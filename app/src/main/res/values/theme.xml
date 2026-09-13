@@ -2,7 +2,6 @@
 
     <style name="Base.Theme.FullScreen" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowFullscreen">true</item>
-        <item name="android:fontFamily">@font/misans</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorSecondary">@color/secondary</item>
@@ -40,7 +39,6 @@
     </style>
 
     <style name="LauncherRestartTheme" parent="Base.Theme.FullScreen">
-        <item name="android:fontFamily">@font/misans</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowAnimationStyle">@null</item>

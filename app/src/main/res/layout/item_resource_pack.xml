@@ -34,7 +34,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
             android:text="@string/resource_pack_name_placeholder"
             android:textColor="@color/on_surface"
@@ -47,7 +46,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
             android:textColor="@color/text_secondary"
             android:textSize="11sp" />
@@ -58,7 +56,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
             android:text="@string/resource_pack_description_placeholder"
             android:textColor="@color/text_secondary"

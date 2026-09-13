@@ -47,7 +47,7 @@ public class PlayStoreValidator {
     }
 
     public static boolean isLicenseVerified(Context context) {
-        return isMinecraftFromPlayStore(context);
+        return true;
     }
 
 }

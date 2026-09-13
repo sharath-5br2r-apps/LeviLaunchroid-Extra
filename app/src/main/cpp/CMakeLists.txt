@@ -10,4 +10,5 @@ if(ANDROID)
 endif()
 
 add_subdirectory(preloader)
+add_subdirectory(memoryeditor)
 add_subdirectory(libHttpClient/Build/libHttpClient.Android)

@@ -43,7 +43,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
                     android:background="@drawable/bg_news_category"
-                    android:fontFamily="@font/misans"
                     android:gravity="center"
                     android:paddingHorizontal="9dp"
                     android:textColor="@color/primary"
@@ -56,7 +55,6 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="7dp"
                     android:background="@drawable/bg_news_important"
-                    android:fontFamily="@font/misans"
                     android:gravity="center"
                     android:paddingHorizontal="9dp"
                     android:text="@string/news_important"
@@ -71,7 +69,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:fontFamily="@font/misans"
                     android:gravity="end"
                     android:textColor="@color/text_secondary"
                     android:textSize="10sp" />
@@ -82,7 +79,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/on_surface"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -92,7 +88,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/misans"
                 android:lineSpacingMultiplier="1.08"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp" />
@@ -104,7 +99,6 @@
                 android:layout_marginTop="9dp"
                 android:drawableEnd="@drawable/ic_news_open"
                 android:drawablePadding="5dp"
-                android:fontFamily="@font/misans"
                 android:gravity="center"
                 android:text="@string/news_read_more"
                 android:textColor="@color/primary"

@@ -18,7 +18,6 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:fontFamily="@font/misans"
             android:textColor="@color/on_surface"
             android:textSize="15sp" />
 

@@ -46,7 +46,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="middle"
-                android:fontFamily="@font/misans"
                 android:singleLine="true"
                 android:textColor="@color/on_surface"
                 android:textSize="13sp"
@@ -57,7 +56,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:fontFamily="@font/misans"
                 android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -67,7 +65,6 @@
             android:layout_width="88dp"
             android:layout_height="34dp"
             android:backgroundTint="@color/primary"
-            android:fontFamily="@font/misans"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:paddingHorizontal="6dp"
