@@ -459,6 +459,7 @@ jobs:
                   "name": filename,
                   "arch": "arm64-v8a",
                   "ext": ".apk",
+                  "os": "Android",
                   "min_sdk": min_sdk,
                   "densities": densities,
                   "native_libraries": native_libraries,
