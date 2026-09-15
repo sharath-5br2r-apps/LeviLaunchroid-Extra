@@ -455,21 +455,25 @@ jobs:
                       print(f"zip inspection failed: {e}")
 
               entry_key = filename.lower()
-              build_json[entry_key] = {
+              asset_obj = {
                   "name": filename,
                   "arch": "arm64-v8a",
-                  "ext": "apk",
+                  "ext": ".apk",
+                  "min_sdk": min_sdk,
+                  "densities": densities,
+                  "native_libraries": native_libraries,
+                  "appliedPatches": applied_patches,
+                  "skippedPatches": [],
+                  "failedPatches": []
+              }
+              build_json[entry_key] = {
+                  "name": filename,
                   "version": "${{ needs.check.outputs.version_name }}",
                   "os": "android",
                   "isVanilla": False,
-                  "min_sdk": min_sdk,
-                  "dpi": "nodpi",
-                  "densities": densities,
-                  "native_libraries": native_libraries,
                   "patches": "levilaunchroid-extra",
                   "changelog": changelog,
-                  "applied_patches": applied_patches,
-                  "removed_patches": []
+                  "assets": [asset_obj]
               }
 
           with open("build.json", "w") as f:
