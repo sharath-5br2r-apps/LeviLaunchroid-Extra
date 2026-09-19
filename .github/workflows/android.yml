@@ -483,6 +483,12 @@ jobs:
               json.dump(build_json, f, indent=2)
           '
 
+      - name: Convert build.json to release manifest
+        env:
+          RELEASE_VERSION: ${{ needs.check.outputs.version_name }}
+          APK_FILE: levilaunchroid-extra-v${{ needs.check.outputs.version_name }}-arm64-v8a.apk
+        run: python3 .github/workflows/scripts/generate_build_manifest.py
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
