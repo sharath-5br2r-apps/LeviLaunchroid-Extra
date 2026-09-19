@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import subprocess
+import glob
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -12,7 +13,12 @@ def main():
     version = os.environ["RELEASE_VERSION"]
     filename = os.environ["APK_FILE"]
     apk = Path(filename)
-    tool = shutil.which("aapt2") or shutil.which("aapt")
+    tools = [shutil.which("aapt2"), shutil.which("aapt")]
+    android_home = os.environ.get("ANDROID_HOME", "")
+    if android_home:
+        tools += sorted(glob.glob(f"{android_home}/build-tools/*/aapt2"), reverse=True)
+        tools += sorted(glob.glob(f"{android_home}/build-tools/*/aapt"), reverse=True)
+    tool = next((candidate for candidate in tools if candidate), None)
     data = {}
     if tool:
         output = subprocess.run([tool, "dump", "badging", str(apk)], capture_output=True,
