@@ -50,6 +50,7 @@ def main():
     for key in ("minSdk", "versionCode", "densities", "nativeLibraries"):
         if key in data and data[key]:
             file_data[key] = data[key]
+    file_data = {key: value for key, value in file_data.items() if value is not None and value != []}
     manifest = {"schema": 1, "kind": "build",
                 "meta": {"build": version, "channel": "stable", "publishedAt": now},
                 "files": {filename: file_data}}
