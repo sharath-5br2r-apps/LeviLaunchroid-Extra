@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import org.levimc.launcher.R;
+import org.levimc.launcher.core.mods.inbuilt.ExternalModBridge;
 import org.levimc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
 import org.levimc.launcher.preloader.PreloaderInput;
 
@@ -33,8 +34,6 @@ public class ModMenuButton {
     private long touchDownTime = 0;
     private static final long TAP_TIMEOUT = 200;
     private static final float DRAG_THRESHOLD = 10f;
-    
-    private ModMenuOverlay menuOverlay;
     
     public ModMenuButton(Activity activity) {
         this.activity = activity;
@@ -120,11 +119,9 @@ public class ModMenuButton {
     private void applyRuntimeVisibility() {
         if (buttonView == null) return;
         InbuiltModManager manager = InbuiltModManager.getInstance(activity);
-        boolean visible = !manager.isPauseMenuOnly() ||
-                (PreloaderInput.isPauseMenuOpen() && PreloaderInput.isShowingMenu());
-        if (!visible) {
-            hideMenu();
-        }
+        boolean visible = !ExternalModBridge.isFloatingModMenuButtonHidden() &&
+                (!manager.isPauseMenuOnly() ||
+                        (PreloaderInput.isPauseMenuOpen() && PreloaderInput.isShowingMenu()));
         buttonView.setVisibility(visible ? View.VISIBLE : View.GONE);
         InbuiltOverlayManager overlayManager = InbuiltOverlayManager.getInstance();
         if (overlayManager != null) {
@@ -206,30 +203,9 @@ public class ModMenuButton {
     }
     
     private void onButtonClick() {
-        InbuiltModManager manager = InbuiltModManager.getInstance(activity);
-        if (manager.isPauseMenuOnly() &&
-                (!PreloaderInput.isPauseMenuOpen() || !PreloaderInput.isShowingMenu())) {
-            hideMenu();
-            return;
-        }
-
-        if (menuOverlay == null) {
-            menuOverlay = new ModMenuOverlay(activity);
-            menuOverlay.setCallback(new ModMenuOverlay.ModMenuCallback() {
-                @Override
-                public void onModToggled(String modId, boolean enabled) {
-                }
-                @Override
-                public void onButtonOpacityChanged(int opacity) {
-                    applyButtonOpacity();
-                }
-            });
-        }
-        
-        if (menuOverlay.isShowing()) {
-            menuOverlay.hide();
-        } else {
-            menuOverlay.show();
+        InbuiltOverlayManager overlayManager = InbuiltOverlayManager.getInstance();
+        if (overlayManager != null) {
+            overlayManager.toggleModMenuFromButton();
         }
     }
     
@@ -243,10 +219,6 @@ public class ModMenuButton {
     }
     
     public void hide() {
-        if (menuOverlay != null) {
-            menuOverlay.hide();
-            menuOverlay = null;
-        }
         if (!isShowing || buttonView == null) return;
         handler.post(() -> {
             try {
@@ -274,13 +246,7 @@ public class ModMenuButton {
         return isShowing;
     }
 
-    public boolean isMenuShowing() {
-        return menuOverlay != null && menuOverlay.isShowing();
-    }
-
-    public void hideMenu() {
-        if (menuOverlay != null && menuOverlay.isShowing()) {
-            menuOverlay.hide();
-        }
+    public void refreshOpacity() {
+        applyButtonOpacity();
     }
 }

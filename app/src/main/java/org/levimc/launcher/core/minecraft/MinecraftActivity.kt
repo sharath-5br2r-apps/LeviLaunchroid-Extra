@@ -205,6 +205,23 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    fun requestOpenModMenu() {
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    overlayManager?.showModMenu()
+                }
+            }
+        }
+    }
+
+    fun requestCloseModMenu() {
+        runOnUiThread {
+            overlayManager?.hideModMenu()
+        }
+    }
+
     fun openPreloaderDocumentPicker(mimeType: String) {
         runOnUiThread {
             try {
@@ -345,13 +362,23 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             return super.dispatchTouchEvent(event)
         }
 
-        val actionIndex = event.actionIndex
-        if (org.levimc.launcher.preloader.PreloaderInput.onTouch(
-                event.actionMasked,
-                event.getPointerId(actionIndex),
-                event.getX(actionIndex),
-                event.getY(actionIndex)
-            )) {
+        val action = event.actionMasked
+        val consumed = if (action == MotionEvent.ACTION_MOVE ||
+            action == MotionEvent.ACTION_CANCEL) {
+            var anyConsumed = false
+            for (index in 0 until event.pointerCount) {
+                if (PreloaderInput.onTouch(action, event.getPointerId(index),
+                        event.getX(index), event.getY(index))) {
+                    anyConsumed = true
+                }
+            }
+            anyConsumed
+        } else {
+            val index = event.actionIndex
+            PreloaderInput.onTouch(action, event.getPointerId(index),
+                event.getX(index), event.getY(index))
+        }
+        if (consumed) {
             return true
         }
 
