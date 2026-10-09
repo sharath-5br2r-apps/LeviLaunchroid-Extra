@@ -326,12 +326,6 @@ jobs:
       - name: Grant Execute Permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: Inject API Keys
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-        run: |
-          echo "curseforge.api_key=${CF_API_KEY}" >> local.properties
-
       - name: Build APKs
         run: |
           ./gradlew assembleDebug assembleBeta assembleRelease -PversionName="${{ needs.check.outputs.version_name }}" --stacktrace
