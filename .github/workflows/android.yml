@@ -516,3 +516,10 @@ jobs:
 
           git tag "sync/$TAG"
           git push origin "sync/$TAG"
+
+  trigger_cleanup:
+    needs: [build]
+    if: ${{ needs.build.result == 'success' }}
+    uses: ./.github/workflows/cleanup.yml
+    secrets: inherit
+
