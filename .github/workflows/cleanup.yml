@@ -17,8 +17,7 @@ concurrency:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    permissions: write-all
     timeout-minutes: 10
     steps:
       - name: Checkout
