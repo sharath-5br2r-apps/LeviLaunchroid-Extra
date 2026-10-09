@@ -356,7 +356,7 @@ jobs:
           signingKeyBase64: ${{ secrets.KEYSTORE_P12_BASE64 }}
           alias: ${{ vars.KEYSTORE_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.KEYSTORE_PASSWORD }}
           zipAlign: true
         env:
           BUILD_TOOLS_VERSION: "35.0.0"
