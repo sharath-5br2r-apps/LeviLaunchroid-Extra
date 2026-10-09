@@ -169,7 +169,7 @@ import okhttp3.OkHttpClient;
         setupNavBar();
         setupManagersAndHandlers();
         if (!isInstanceShortcutIntent()) {
-            new GithubReleaseUpdater(this, "sharath-5br2r-apps", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdateOnLaunch();
+            new GithubReleaseUpdater(this, "sharath-5br2r", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdateOnLaunch();
         }
         showEulaIfNeeded();
         setupOnBackPressedCallback();

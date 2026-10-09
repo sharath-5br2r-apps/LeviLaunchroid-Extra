@@ -903,7 +903,7 @@ public class SettingsActivity extends BaseActivity {
 
     private void setupAboutSection() {
         findViewById(R.id.settings_btn_github).setOnClickListener(v ->
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sharath-5br2r-apps/LeviLaunchroid-Extra"))));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sharath-5br2r/LeviLaunchroid-Extra"))));
 
         findViewById(R.id.settings_btn_discord).setOnClickListener(v ->
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/jsnzw4ueAt"))));
@@ -923,7 +923,7 @@ public class SettingsActivity extends BaseActivity {
             updateButtonTapCount = 0;
             triggerEasterEgg();
         } else {
-            new GithubReleaseUpdater(this, "sharath-5br2r-apps", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdate();
+            new GithubReleaseUpdater(this, "sharath-5br2r", "LeviLaunchroid-Extra", permissionResultLauncher).checkUpdate();
         }
     }
 
