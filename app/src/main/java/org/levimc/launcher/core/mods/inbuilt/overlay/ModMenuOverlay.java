@@ -1,16 +1,19 @@
 package org.levimc.launcher.core.mods.inbuilt.overlay;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.res.ColorStateList;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.View;
@@ -21,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -34,6 +38,7 @@ import org.levimc.launcher.core.mods.inbuilt.UnifiedMod;
 import org.levimc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +52,13 @@ public class ModMenuOverlay {
         ENABLED,
         INBUILT,
         EXTERNAL
+    }
+
+    private enum MenuSection {
+        MODULES,
+        SETTINGS,
+        CONFIG,
+        HUD_EDITOR
     }
 
     private final Activity activity;
@@ -78,6 +90,7 @@ public class ModMenuOverlay {
     private Switch notificationsSwitch;
     private Switch pauseMenuOnlySwitch;
     private Switch compactModeSwitch;
+    private TextView modMenuKeybindValue;
     private SeekBar modMenuOpacitySeekBar;
     private TextView modMenuOpacityText;
     private SeekBar modMenuButtonOpacitySeekBar;
@@ -92,6 +105,14 @@ public class ModMenuOverlay {
     private List<UnifiedMod> filteredMods = new ArrayList<>();
     private final Set<String> favoriteKeys = new HashSet<>();
     private ModuleFilter activeFilter = ModuleFilter.ALL;
+    private MenuSection activeSection = MenuSection.MODULES;
+    private String lastConfigModKey;
+    private String lastSearchQuery = "";
+    private Parcelable fullModsScrollState;
+    private Parcelable compactModsScrollState;
+    private int settingsScrollPosition;
+    private final Map<String, Integer> legacyConfigScrollPositions = new HashMap<>();
+    private boolean restoringLastSection;
     
     private ModMenuCallback callback;
     private ModNotificationManager notificationManager;
@@ -178,11 +199,22 @@ public class ModMenuOverlay {
         showInternal();
     }
     
+    private void prepareMenuKeyboard() {
+        ModMenuKeyRoot root = (ModMenuKeyRoot) overlayView;
+        root.setShortcutHandler(event -> {
+            InbuiltOverlayManager overlayManager = InbuiltOverlayManager.getInstance();
+            return overlayManager != null && overlayManager.handleModMenuShortcut(event);
+        });
+        root.setFocusableInTouchMode(true);
+        root.requestFocus();
+    }
+
     private void showInternal() {
         if (isShowing || activity.isFinishing() || activity.isDestroyed()) return;
         
         try {
             overlayView = LayoutInflater.from(activity).inflate(R.layout.overlay_mod_menu, null);
+            prepareMenuKeyboard();
             
             int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -202,6 +234,7 @@ public class ModMenuOverlay {
             
             setupViews();
             loadMods();
+            restoreModsScrollPosition();
             
             wmParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -220,12 +253,14 @@ public class ModMenuOverlay {
             
             windowManager.addView(overlayView, wmParams);
             isShowing = true;
+            restoreLastSection();
+            overlayView.requestFocus();
             
             overlayView.setAlpha(0f);
             overlayView.animate().alpha(1f).setDuration(220).start();
             
             View menuContainer = overlayView.findViewById(R.id.mod_menu_container);
-            if (menuContainer != null) {
+            if (menuContainer != null && activeSection != MenuSection.HUD_EDITOR) {
                 animateMenuEnter(menuContainer);
             }
         } catch (Exception e) {
@@ -239,8 +274,10 @@ public class ModMenuOverlay {
         if (rootView == null) return;
         
         overlayView = LayoutInflater.from(activity).inflate(R.layout.overlay_mod_menu, null);
+        prepareMenuKeyboard();
         setupViews();
         loadMods();
+        restoreModsScrollPosition();
         
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
@@ -248,13 +285,15 @@ public class ModMenuOverlay {
         );
         rootView.addView(overlayView, params);
         isShowing = true;
+        overlayView.requestFocus();
         wmParams = null;
+        restoreLastSection();
         
         overlayView.setAlpha(0f);
         overlayView.animate().alpha(1f).setDuration(220).start();
         
         View menuContainer = overlayView.findViewById(R.id.mod_menu_container);
-        if (menuContainer != null) {
+        if (menuContainer != null && activeSection != MenuSection.HUD_EDITOR) {
             animateMenuEnter(menuContainer);
         }
     }
@@ -367,6 +406,7 @@ public class ModMenuOverlay {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                lastSearchQuery = s.toString();
                 searchHandler.removeCallbacks(searchRunnable);
                 searchHandler.postDelayed(searchRunnable, 60L);
                 clearSearchBtn.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
@@ -379,6 +419,7 @@ public class ModMenuOverlay {
             searchInput.setText("");
             clearSearchBtn.setVisibility(View.GONE);
         });
+        if (!lastSearchQuery.isEmpty()) searchInput.setText(lastSearchQuery);
         setupFilterButtons();
         setupCompactFilter();
         
@@ -406,6 +447,13 @@ public class ModMenuOverlay {
             pauseMenuOnlySwitch.setOnCheckedChangeListener((btn, checked) -> {
                 modManager.setPauseMenuOnly(checked);
             });
+        }
+
+        modMenuKeybindValue = overlayView.findViewById(R.id.mod_menu_keybind_value);
+        View modMenuKeybindSetting = overlayView.findViewById(R.id.setting_mod_menu_keybind);
+        updateModMenuKeybindValue();
+        if (modMenuKeybindSetting != null) {
+            modMenuKeybindSetting.setOnClickListener(v -> showModMenuKeybindDialog());
         }
 
         if (compactModeSwitch != null) {
@@ -508,11 +556,112 @@ public class ModMenuOverlay {
         });
         modsRecycler.setAdapter(adapter);
         applyCompactModeLayout(compactMode);
-        
-        showModulesSection();
     }
-    
+
+    private void updateModMenuKeybindValue() {
+        if (modMenuKeybindValue == null) return;
+        int keyCode = InbuiltModManager.getInstance(activity).getModMenuKeybind();
+        if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+            modMenuKeybindValue.setText(R.string.mod_menu_keybind_unbound);
+            return;
+        }
+        String keyLabel = KeyEvent.keyCodeToString(keyCode);
+        if (keyLabel != null && keyLabel.startsWith("KEYCODE_")) {
+            keyLabel = keyLabel.substring(8);
+        }
+        modMenuKeybindValue.setText(keyLabel == null ? "" : keyLabel.replace('_', ' '));
+    }
+
+    private void showModMenuKeybindDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(R.string.mod_menu_keybind)
+                .setMessage(R.string.mod_config_press_any_key)
+                .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.mod_menu_keybind_reset, (d, which) -> {
+                    InbuiltModManager.getInstance(activity).setModMenuKeybind(KeyEvent.KEYCODE_M);
+                    updateModMenuKeybindValue();
+                })
+                .create();
+        dialog.setOnKeyListener((d, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_BACK) {
+                dialog.dismiss();
+                return true;
+            }
+            if (event.getRepeatCount() != 0 || keyCode == KeyEvent.KEYCODE_UNKNOWN
+                    || keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                    || keyCode == KeyEvent.KEYCODE_POWER || keyCode == KeyEvent.KEYCODE_HOME) {
+                return true;
+            }
+            InbuiltModManager.getInstance(activity).setModMenuKeybind(keyCode);
+            updateModMenuKeybindValue();
+            dialog.dismiss();
+            return true;
+        });
+        dialog.show();
+    }
+
+    private void restoreLastSection() {
+        restoringLastSection = true;
+        try {
+            switch (activeSection) {
+                case SETTINGS:
+                    showSettingsSection();
+                    break;
+                case CONFIG:
+                    boolean found = false;
+                    for (UnifiedMod mod : allMods) {
+                        if (mod.getStableKey().equals(lastConfigModKey) && mod.hasConfig()) {
+                            showConfigSection(mod);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) showModulesSection();
+                    break;
+                case HUD_EDITOR:
+                    enterHudEditorMode(menuContainer, overlayView.findViewById(R.id.hud_editor_tools));
+                    break;
+                case MODULES:
+                default:
+                    showModulesSection();
+                    break;
+            }
+        } finally {
+            restoringLastSection = false;
+        }
+    }
+
+    private void saveVisibleScrollPosition() {
+        if (restoringLastSection || !isShowing || overlayView == null) return;
+        if (activeSection == MenuSection.MODULES && modulesContainer != null
+                && modulesContainer.getVisibility() == View.VISIBLE && modsLayoutManager != null
+                && modsRecycler != null && modsRecycler.getChildCount() > 0) {
+            Parcelable state = modsLayoutManager.onSaveInstanceState();
+            if (compactMode) compactModsScrollState = state;
+            else fullModsScrollState = state;
+        } else if (activeSection == MenuSection.SETTINGS && settingsContainer instanceof ScrollView) {
+            settingsScrollPosition = ((ScrollView) settingsContainer).getScrollY();
+        } else if (activeSection == MenuSection.CONFIG) {
+            ViewGroup content = overlayView.findViewById(R.id.mod_config_content);
+            RuntimeConfigView.save(content);
+            if (content != null && content.getChildCount() > 0
+                    && content.getChildAt(0) instanceof ScrollView && lastConfigModKey != null) {
+                legacyConfigScrollPositions.put(lastConfigModKey,
+                        ((ScrollView) content.getChildAt(0)).getScrollY());
+            }
+        }
+    }
+
+    private void restoreModsScrollPosition() {
+        if (modsLayoutManager == null || adapter == null || adapter.getItemCount() == 0) return;
+        Parcelable state = compactMode ? compactModsScrollState : fullModsScrollState;
+        if (state != null) modsLayoutManager.onRestoreInstanceState(state);
+    }
+
     private void showModulesSection() {
+        saveVisibleScrollPosition();
+        activeSection = MenuSection.MODULES;
         updateNavigationItem(navModules, compactNavModules, true);
         updateNavigationItem(navSettings, compactNavSettings, false);
         updateNavigationItem(navHudEditor, compactNavHudEditor, false);
@@ -535,6 +684,8 @@ public class ModMenuOverlay {
     }
     
     private void showSettingsSection() {
+        saveVisibleScrollPosition();
+        activeSection = MenuSection.SETTINGS;
         updateNavigationItem(navSettings, compactNavSettings, true);
         updateNavigationItem(navModules, compactNavModules, false);
         updateNavigationItem(navHudEditor, compactNavHudEditor, false);
@@ -555,13 +706,25 @@ public class ModMenuOverlay {
             if (filterBar != null) filterBar.setVisibility(View.GONE);
             if (compactFilterBar != null) compactFilterBar.setVisibility(View.GONE);
         }
+        if (restoringLastSection && settingsContainer instanceof ScrollView) {
+            View current = settingsContainer;
+            int position = settingsScrollPosition;
+            current.post(() -> {
+                if (overlayView != null && settingsContainer == current) {
+                    ((ScrollView) current).scrollTo(0, position);
+                }
+            });
+        }
     }
     
     private void showConfigSection(UnifiedMod mod) {
+        saveVisibleScrollPosition();
         if (mod.openCustomConfig()) {
             hide();
             return;
         }
+        activeSection = MenuSection.CONFIG;
+        lastConfigModKey = mod.getStableKey();
         updateNavigationItem(navModules, compactNavModules, false);
         updateNavigationItem(navSettings, compactNavSettings, false);
         updateNavigationItem(navHudEditor, compactNavHudEditor, false);
@@ -593,6 +756,16 @@ public class ModMenuOverlay {
                         overlayManager.applyConfigurationChanges(mod.getId());
                     }
                 });
+                if (modConfigContent.getChildCount() > 0
+                        && modConfigContent.getChildAt(0) instanceof ScrollView) {
+                    ScrollView scroll = (ScrollView) modConfigContent.getChildAt(0);
+                    int position = legacyConfigScrollPositions.getOrDefault(mod.getStableKey(), 0);
+                    scroll.post(() -> {
+                        if (overlayView != null && scroll.getParent() == modConfigContent) {
+                            scroll.scrollTo(0, position);
+                        }
+                    });
+                }
             }
         }
     }
@@ -666,6 +839,8 @@ public class ModMenuOverlay {
     }
 
     private void enterHudEditorMode(View modMenuContainer, View hudEditorTools) {
+        saveVisibleScrollPosition();
+        activeSection = MenuSection.HUD_EDITOR;
         updateNavigationItem(navModules, compactNavModules, false);
         updateNavigationItem(navSettings, compactNavSettings, false);
         updateNavigationItem(navHudEditor, compactNavHudEditor, true);
@@ -809,6 +984,7 @@ public class ModMenuOverlay {
     }
 
     private void setCompactMode(boolean compact) {
+        saveVisibleScrollPosition();
         compactMode = compact;
         if (modsLayoutManager != null) {
             modsLayoutManager.setSpanCount(compact ? 1 : 4);
@@ -817,6 +993,7 @@ public class ModMenuOverlay {
             adapter.setCompactMode(compact);
             adapter.updateMods(filteredMods, favoriteKeys);
         }
+        restoreModsScrollPosition();
         applyCompactModeLayout(compact);
         updateFilterBarVisibility();
         updateFilterButtons();
@@ -1131,6 +1308,9 @@ public class ModMenuOverlay {
     
     public void hide() {
         if (!isShowing || overlayView == null) return;
+        saveVisibleScrollPosition();
+        searchHandler.removeCallbacks(searchRunnable);
+        RuntimeConfigView.stop(overlayView.findViewById(R.id.mod_config_content));
 
         InbuiltOverlayManager overlayManager = InbuiltOverlayManager.getInstance();
         if (overlayManager != null) {

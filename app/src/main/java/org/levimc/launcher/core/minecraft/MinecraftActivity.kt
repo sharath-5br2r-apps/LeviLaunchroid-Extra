@@ -25,6 +25,7 @@ import org.levimc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod
 import org.levimc.launcher.core.mods.inbuilt.overlay.InbuiltOverlayManager
 import org.levimc.launcher.preloader.PreloaderInput
 import org.levimc.launcher.settings.FeatureSettings
+import org.levimc.launcher.util.LauncherBackgroundController
 import org.levimc.pojavcontrols.PojavControls
 import org.levimc.pojavcontrols.PojavControlsHost
 import java.io.File
@@ -44,6 +45,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     private var gameRuntimeStarted = false
     private var preloaderTextInput: PreloaderTextInput? = null
     private var previousInputFocus: View? = null
+    private var inbuiltKeyDispatchDepth = 0
 
     private class PreloaderTextInput(context: Context) : AppCompatEditText(context) {
         override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
@@ -92,6 +94,8 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        LauncherBackgroundController.suspendForMinecraft()
+        LauncherBackgroundController.awaitShutdown()
         trace = LaunchTrace.ensure(intent)
         trace.mark("MinecraftActivity onCreate entered")
         window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(resolveLaunchBackgroundColor()))
@@ -315,6 +319,16 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val textInputActive = isTextWidgetActive() || preloaderTextInput?.hasFocus() == true
+        if (textInputActive) {
+            overlayManager?.releaseKeybinds()
+        }
+        if (inbuiltKeyDispatchDepth == 0 && !textInputActive &&
+            overlayManager?.handleModMenuShortcut(event) == true) {
+            return true
+        }
+        val inbuiltKeyReleased = inbuiltKeyDispatchDepth == 0 &&
+            event.action == KeyEvent.ACTION_UP && overlayManager?.handleKeyEvent(event) == true
         if (isTextWidgetActive() &&
             (event.keyCode == KeyEvent.KEYCODE_ESCAPE || event.keyCode == KeyEvent.KEYCODE_BACK)) {
             return super.dispatchKeyEvent(event)
@@ -340,12 +354,22 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             }
         }
 
-        overlayManager?.let { manager ->
-            if (manager.handleKeyEvent(event.keyCode, event.action)) {
+        if (inbuiltKeyReleased) return true
+        if (inbuiltKeyDispatchDepth == 0 && !textInputActive) {
+            if (overlayManager?.handleKeyEvent(event) == true) {
                 return true
             }
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    fun dispatchInbuiltKeyEvent(event: KeyEvent): Boolean {
+        inbuiltKeyDispatchDepth++
+        return try {
+            dispatchKeyEvent(event)
+        } finally {
+            inbuiltKeyDispatchDepth--
+        }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
@@ -452,6 +476,8 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun onPause() {
+        overlayManager?.releaseModMenuShortcut()
+        overlayManager?.releaseKeybinds()
         val shouldRestartAfterNormalExit = shouldRestartAfterNormalExit()
         if (shouldRestartAfterNormalExit) {
             PreloaderInput.cancelDocumentRequest("Minecraft closed")
@@ -461,6 +487,14 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         }
         MinecraftActivityState.onPaused(this)
         super.onPause()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (!hasFocus) {
+            overlayManager?.releaseModMenuShortcut()
+            overlayManager?.releaseKeybinds()
+        }
+        super.onWindowFocusChanged(hasFocus)
     }
 
     override fun onDestroy() {

@@ -603,7 +603,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/bg_image_title"
+                            android:text="@string/bg_media_title"
                             android:textColor="@color/on_surface"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -612,7 +612,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="@string/bg_image_desc"
+                            android:text="@string/bg_media_desc"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
@@ -745,7 +745,7 @@
                                 android:paddingHorizontal="14dp"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
-                                android:text="@string/select_image"
+                                android:text="@string/bg_media_select"
                                 android:textColor="@color/on_primary"
                                 android:textSize="11sp"
                                 android:textAllCaps="false"

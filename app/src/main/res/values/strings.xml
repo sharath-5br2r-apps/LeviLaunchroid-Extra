@@ -783,6 +783,10 @@ Migration must complete before LeviLauncher can continue.</string>
     <string name="mod_menu_appearance">Appearance</string>
     <string name="mod_menu_pause_menu_only">Pause Menu Only</string>
     <string name="mod_menu_pause_menu_only_desc">Only show mod menu in pause screen</string>
+    <string name="mod_menu_keybind">Mod Menu Keybind</string>
+    <string name="mod_menu_keybind_desc">Press to change the keyboard shortcut</string>
+    <string name="mod_menu_keybind_reset">Reset to M</string>
+    <string name="mod_menu_keybind_unbound">Unbound</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">Settings coming soon</string>
@@ -1175,4 +1179,15 @@ Migration must complete before LeviLauncher can continue.</string>
     <string name="batch_transferring">Transferring %1$d of %2$d…</string>
     <string name="batch_result">%1$d completed, %2$d failed</string>
     <string name="choose_export_folder">Choose export folder</string>
+    <string name="mod_config_activation_keybind">Activation keybind</string>
+    <string name="mod_config_edit_controls">Edit controls</string>
+    <string name="mod_config_display_size_dp">Display size (dp)</string>
+    <string name="mod_config_clear_keybind">Clear keybind</string>
+    <string name="bg_media_title">Background</string>
+    <string name="bg_media_desc">Choose a photo or GIF</string>
+    <string name="bg_media_select">Select background</string>
+    <string name="bg_media_none">No background selected</string>
+    <string name="bg_media_importing">Importing background…</string>
+    <string name="bg_media_import_failed">Could not load this background. Choose a supported photo or GIF.</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
 </resources>
