@@ -19,7 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: write
     timeout-minutes: 10
     steps:
       - name: Checkout
